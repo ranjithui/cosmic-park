@@ -12,6 +12,10 @@ Start the API FIRST, then the website. The website talks to the
 API through a dev proxy, so the API must already be up.
 
 Requirements: Node.js 18+ and npm (check with:  node -v ).
+Also needed: a running PostgreSQL database.
+
+To put the site online for a demo instead of running it
+locally, skip to "RUN IT LIVE" at the bottom.
 
 
 ------------------------------------------------------------
@@ -35,8 +39,12 @@ database and a connection string.
   3. Install, set up the database, seed sample data (first time only):
        npm install
        npx prisma generate
-       npx prisma migrate dev --name init
+       npx prisma migrate deploy
        npm run seed
+
+     "migrate deploy" applies the migration already committed in
+     prisma\migrations\. Use "npx prisma migrate dev" only when you
+     have CHANGED schema.prisma and need a new migration.
 
   4. Start the API:
        npm run dev
@@ -45,6 +53,11 @@ database and a connection string.
        Cosmic Park booking API listening on http://localhost:4000
 
   Seeded admin login (change it):  admin@cosmicpark.in / ChangeMe123!
+  Admin dashboard:  http://localhost:4000/admin
+
+  RUN THE SEED ONCE. It is not fully repeatable — re-running it
+  adds three more copies of the seasonal rate plans each time.
+  (The other seeded records are upserts and are safe.)
 
   NOTE: The "DB_PROVIDER=sqlite" shortcut in the API README does
   NOT work as written (Prisma rejects env() in the provider, and
@@ -69,6 +82,29 @@ Folder:  apps\web
   4. Open in your browser:
        http://localhost:5173
 
+  Leave both terminals open while you use the site.
+
+
+------------------------------------------------------------
+ SHORTCUT — FROM THE PROJECT ROOT
+------------------------------------------------------------
+
+The root package.json wraps the commands above, so you don't
+have to cd into each folder:
+
+  cd "C:\Users\USER\ui ux\cosmic-park"
+
+  npm run install:all    -> installs BOTH apps (first time only)
+  npm run seed           -> seeds the database (once — see warning above)
+
+  npm run dev:api        -> terminal 1: starts the API
+  npm run dev:web        -> terminal 2: starts the website
+
+  npm run build:web      -> production build into apps\web\dist
+
+You still need the apps\api\.env file and the Prisma steps from
+Step 1 before the API will start.
+
 
 ------------------------------------------------------------
  TRY THE BOOKING FLOW
@@ -90,6 +126,8 @@ Folder:  apps\web
  PRODUCTION BUILD (optional)
 ------------------------------------------------------------
 
+  In apps\web:
+
   npm run build      -> outputs the site to  dist\
   npm run preview    -> serves the built site locally
 
@@ -97,6 +135,33 @@ Folder:  apps\web
     Copy .env.example to .env and set:
       VITE_API_BASE_URL=https://your-api-domain
     (Leave it blank for local dev — the proxy handles it.)
+
+  This value is baked in when you BUILD, not when you start the
+  server. Change it and you must run "npm run build" again.
+
+
+------------------------------------------------------------
+ RUN IT LIVE (hosted demo)
+------------------------------------------------------------
+
+The project is set up to deploy to Render — the API needs a
+real always-on server (it runs a background job to release
+expired holds, and writes uploads to disk), which is why it is
+not on a serverless host.
+
+  render.yaml   -> the blueprint: database + API + website
+  DEPLOY.md     -> step-by-step instructions and free-tier limits
+
+Short version:
+  1. Push the repo to GitHub.
+  2. Render Dashboard -> New -> Blueprint -> pick this repo -> Apply.
+  3. Seed the database once from your machine (see DEPLOY.md).
+
+Before showing the demo: open the API health URL first
+(https://<your-api>.onrender.com/api/health) and wait for it to
+respond. On Render's free plan the API sleeps after 15 minutes
+idle and takes 30-60 seconds to wake, and the website will look
+frozen while it does.
 
 
 ------------------------------------------------------------
@@ -119,4 +184,12 @@ Folder:  apps\web
       That's expected until real images are uploaded via the admin
       dashboard (http://localhost:4000/admin). The site falls back
       to placeholders automatically.
+
+  - API won't start, Prisma error about the database:
+      DATABASE_URL in apps\api\.env is wrong, or PostgreSQL isn't
+      running. Confirm you can connect with that string first.
+
+  - Duplicate rate plans in the admin dashboard:
+      The seed was run more than once. Delete the extras in the
+      admin rate table.
 ============================================================
