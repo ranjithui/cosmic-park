@@ -24,7 +24,15 @@ Render reads the blueprint, creates the database first, then builds both service
 
 ## Change the admin password
 
-Seeded login: `admin@cosmicpark.in` / `ChangeMe123!` — **change it before sharing the demo URL.** The admin dashboard is public at `https://<api-host>/admin`.
+The admin dashboard is public at `https://<api-host>/admin` and a fresh database seeds with `admin@cosmicpark.in` / `ChangeMe123!`. **Change it before sharing the demo URL.**
+
+Free instances have no shell and the API has no change-password endpoint, so the password is rotated through an env var:
+
+1. Render Dashboard → `cosmic-park-api` → **Environment**
+2. Set **`ADMIN_PASSWORD`** to the password you want
+3. **Save** — Render redeploys, and the seed resets the login to that value
+
+`ADMIN_PASSWORD` is declared `sync: false` in the blueprint, so the value lives only in Render, never in git. While it is set, every deploy re-applies it — so change it in the dashboard, not in the admin UI, or the next deploy will overwrite your change. Leave it unset and the seed won't touch an existing password at all.
 
 ## Re-seeding
 

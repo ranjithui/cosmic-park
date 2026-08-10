@@ -52,8 +52,12 @@ database and a connection string.
      You should see:
        Cosmic Park booking API listening on http://localhost:4000
 
-  Seeded admin login (change it):  admin@cosmicpark.in / ChangeMe123!
-  Admin dashboard:  http://localhost:4000/admin
+  Seeded admin login:  admin@cosmicpark.in / ChangeMe123!
+  Admin dashboard:     http://localhost:4000/admin
+
+  To use a different password, set ADMIN_PASSWORD in .env and
+  re-run "npm run seed". While that variable is set, each seed
+  run resets the login to it.
 
   The seed is safe to re-run. It matches existing records by
   email / slug / name and updates them in place, and it never

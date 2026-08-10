@@ -4,10 +4,16 @@ const prisma = new PrismaClient();
 
 async function main() {
   // --- Admin user ---
-  const passwordHash = await bcrypt.hash('ChangeMe123!', 10);
+  // Set ADMIN_PASSWORD to control the login (in Render: the API service's
+  // env vars). When it is set, every deploy resets the password to it —
+  // that is the only way to rotate the password on an instance with no
+  // shell. When it is unset, an existing password is left alone and only
+  // a brand-new database falls back to the throwaway default.
+  const explicitPassword = process.env.ADMIN_PASSWORD;
+  const passwordHash = await bcrypt.hash(explicitPassword || 'ChangeMe123!', 10);
   await prisma.adminUser.upsert({
     where: { email: 'admin@cosmicpark.in' },
-    update: {},
+    update: explicitPassword ? { passwordHash } : {},
     create: {
       email: 'admin@cosmicpark.in',
       passwordHash,
@@ -119,7 +125,11 @@ async function main() {
   });
 
   console.log('Seed complete.');
-  console.log('Admin login: admin@cosmicpark.in / ChangeMe123!  (change this immediately)');
+  console.log(
+    explicitPassword
+      ? 'Admin login: admin@cosmicpark.in / password from ADMIN_PASSWORD'
+      : 'Admin login: admin@cosmicpark.in / ChangeMe123!  (set ADMIN_PASSWORD to change it)'
+  );
 }
 
 main()
