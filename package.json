@@ -1,0 +1,13 @@
+{
+  "name": "cosmic-park",
+  "private": true,
+  "version": "1.0.0",
+  "description": "Cosmic Park — private 8-bedroom villa: marketing site + booking flow (React) and booking API (Node/Express/Prisma).",
+  "scripts": {
+    "install:all": "npm --prefix apps/api install && npm --prefix apps/web install",
+    "dev:api": "npm --prefix apps/api run dev",
+    "dev:web": "npm --prefix apps/web run dev",
+    "build:web": "npm --prefix apps/web run build",
+    "seed": "npm --prefix apps/api run seed"
+  }
+}

@@ -1,0 +1,22 @@
+# dependencies
+node_modules/
+
+# builds
+dist/
+dist-ssr/
+
+# env & secrets
+.env
+*.local
+
+# database (local sqlite prototyping)
+*.db
+*.db-journal
+
+# uploads (keep the folder, ignore contents)
+apps/api/uploads/*
+!apps/api/uploads/.gitkeep
+
+# os / editor
+.DS_Store
+Thumbs.db

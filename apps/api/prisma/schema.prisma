@@ -1,0 +1,275 @@
+// ============================================================
+// Cosmic Park — Booking System Schema
+// Provider is PostgreSQL. It cannot be driven by env() — Prisma
+// requires a literal provider — and the enums below rule out SQLite.
+// ============================================================
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// ------------------------------------------------------------
+// GUESTS
+// ------------------------------------------------------------
+model Guest {
+  id          String    @id @default(uuid())
+  firstName   String
+  lastName    String
+  email       String    @unique
+  phone       String?
+  idProofType String? // passport / aadhaar / driving_license
+  idProofNo   String?
+  city        String?
+  country     String?
+  notes       String? // internal notes, e.g. repeat guest, allergies flag
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+
+  bookings    Booking[]
+
+  @@index([email])
+}
+
+// ------------------------------------------------------------
+// ROOM TYPES & ROOMS
+// A RoomType is the sellable category (e.g. "Whole Villa",
+// "Garden View Bedroom"). Room is a physical, bookable unit
+// belonging to a RoomType — this lets a whole-villa property
+// like Cosmic Park sell either the entire villa as one unit,
+// or (if ever needed) individual bedrooms as separate units,
+// without changing the schema.
+// ------------------------------------------------------------
+model RoomType {
+  id           String   @id @default(uuid())
+  name         String // "Whole Villa (8BR)", "Garden Bedroom"
+  slug         String   @unique
+  description  String?
+  maxOccupancy Int
+  bedrooms     Int      @default(1)
+  bathrooms    Int      @default(1)
+  basePrice    Decimal  @db.Decimal(10, 2) // fallback nightly rate if no RatePlan matches
+  isActive     Boolean  @default(true)
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  rooms        Room[]
+  ratePlans    RatePlan[]
+  media        Media[]
+  amenities    RoomTypeAmenity[]
+  bookingItems BookingItem[]
+}
+
+model Room {
+  id         String   @id @default(uuid())
+  roomTypeId String
+  roomType   RoomType @relation(fields: [roomTypeId], references: [id], onDelete: Cascade)
+  code       String // internal identifier, e.g. "VILLA-01"
+  isActive   Boolean  @default(true)
+  createdAt  DateTime @default(now())
+
+  availabilityBlocks AvailabilityBlock[]
+  bookingItems       BookingItem[]
+
+  @@unique([roomTypeId, code])
+}
+
+model Amenity {
+  id        String            @id @default(uuid())
+  name      String            @unique // "Private Pool", "Bonfire Pit", "Carrom"
+  icon      String? // icon key for frontend
+  roomTypes RoomTypeAmenity[]
+}
+
+model RoomTypeAmenity {
+  roomTypeId String
+  amenityId  String
+  roomType   RoomType @relation(fields: [roomTypeId], references: [id], onDelete: Cascade)
+  amenity    Amenity  @relation(fields: [amenityId], references: [id], onDelete: Cascade)
+
+  @@id([roomTypeId, amenityId])
+}
+
+// ------------------------------------------------------------
+// RATES
+// SeasonalRate rows override RoomType.basePrice for a date
+// range (Peak / Off-Peak / Festive tiers). Overlapping ranges
+// are resolved by priority (higher wins) — enforced in the
+// pricing service, not the DB.
+// ------------------------------------------------------------
+model RatePlan {
+  id          String   @id @default(uuid())
+  roomTypeId  String
+  roomType    RoomType @relation(fields: [roomTypeId], references: [id], onDelete: Cascade)
+  name        String // "Off-Peak", "Peak Season", "Festive/New Year"
+  startDate   DateTime
+  endDate     DateTime
+  nightlyRate Decimal  @db.Decimal(10, 2)
+  minStay     Int      @default(1)
+  priority    Int      @default(0) // higher = takes precedence on overlap
+  isActive    Boolean  @default(true)
+  createdAt   DateTime @default(now())
+
+  @@index([roomTypeId, startDate, endDate])
+}
+
+// ------------------------------------------------------------
+// AVAILABILITY
+// AvailabilityBlock represents dates a Room is NOT bookable
+// (owner block-out, maintenance) independent of bookings.
+// Actual availability = no overlapping CONFIRMED/HELD booking
+// AND no overlapping AvailabilityBlock. Computed at query time
+// by the availability service rather than materialized here,
+// to avoid drift.
+// ------------------------------------------------------------
+model AvailabilityBlock {
+  id        String   @id @default(uuid())
+  roomId    String
+  room      Room     @relation(fields: [roomId], references: [id], onDelete: Cascade)
+  startDate DateTime
+  endDate   DateTime // exclusive, same convention as bookings
+  reason    String? // "Owner block", "Maintenance"
+  createdAt DateTime @default(now())
+
+  @@index([roomId, startDate, endDate])
+}
+
+// ------------------------------------------------------------
+// BOOKINGS
+// Booking = the reservation header (guest, status, totals).
+// BookingItem = one room-type/room + date-range line (supports
+// multi-room bookings later without a schema change).
+// Status flow: HELD -> CONFIRMED -> (CANCELLED | COMPLETED)
+// HELD rows carry holdExpiresAt; a background job (see
+// src/utils/holdCleanup.js) releases expired holds.
+// ------------------------------------------------------------
+enum BookingStatus {
+  HELD
+  CONFIRMED
+  CANCELLED
+  COMPLETED
+}
+
+model Booking {
+  id             String        @id @default(uuid())
+  reference      String        @unique // human-facing code, e.g. CP-2026-000123
+  guestId        String
+  guest          Guest         @relation(fields: [guestId], references: [id])
+  status         BookingStatus @default(HELD)
+  holdExpiresAt  DateTime? // null once CONFIRMED
+  totalGuests    Int
+  subtotal       Decimal       @db.Decimal(10, 2)
+  taxAmount      Decimal       @db.Decimal(10, 2) @default(0)
+  addOnAmount    Decimal       @db.Decimal(10, 2) @default(0)
+  totalAmount    Decimal       @db.Decimal(10, 2)
+  depositAmount  Decimal?      @db.Decimal(10, 2)
+  currency       String        @default("INR")
+  specialRequest String?
+  source         String        @default("website") // website | admin | phone
+  createdAt      DateTime      @default(now())
+  updatedAt      DateTime      @updatedAt
+  cancelledAt    DateTime?
+  cancelReason   String?
+
+  items    BookingItem[]
+  addOns   BookingAddOn[]
+  payments Payment[]
+
+  @@index([status, holdExpiresAt])
+}
+
+model BookingItem {
+  id         String   @id @default(uuid())
+  bookingId  String
+  booking    Booking  @relation(fields: [bookingId], references: [id], onDelete: Cascade)
+  roomTypeId String
+  roomType   RoomType @relation(fields: [roomTypeId], references: [id])
+  roomId     String
+  room       Room     @relation(fields: [roomId], references: [id])
+  checkIn    DateTime // date only, stored at midnight UTC
+  checkOut   DateTime // exclusive — a stay of 1 night has checkOut = checkIn + 1 day
+  nights     Int
+  nightlyRate Decimal @db.Decimal(10, 2) // rate actually charged, snapshotted at booking time
+  lineTotal  Decimal  @db.Decimal(10, 2)
+
+  @@index([roomId, checkIn, checkOut])
+}
+
+model AddOnCatalog {
+  id          String   @id @default(uuid())
+  name        String   @unique // "Bonfire Experience"
+  description String?
+  unit        String   @default("per_person") // per_person | per_booking | per_night
+  price       Decimal  @db.Decimal(10, 2)
+  taxRate     Decimal  @db.Decimal(5, 2) @default(18.00) // GST %
+  isActive    Boolean  @default(true)
+
+  bookingAddOns BookingAddOn[]
+}
+
+model BookingAddOn {
+  id             String       @id @default(uuid())
+  bookingId      String
+  booking        Booking      @relation(fields: [bookingId], references: [id], onDelete: Cascade)
+  addOnId        String
+  addOn          AddOnCatalog @relation(fields: [addOnId], references: [id])
+  quantity       Int          @default(1)
+  unitPrice      Decimal      @db.Decimal(10, 2) // snapshotted
+  taxAmount      Decimal      @db.Decimal(10, 2)
+  lineTotal      Decimal      @db.Decimal(10, 2)
+}
+
+model Payment {
+  id            String   @id @default(uuid())
+  bookingId     String
+  booking       Booking  @relation(fields: [bookingId], references: [id], onDelete: Cascade)
+  amount        Decimal  @db.Decimal(10, 2)
+  type          String // deposit | balance | refund
+  method        String? // razorpay | stripe | bank_transfer | cash
+  referenceId   String? // gateway transaction id
+  status        String   @default("pending") // pending | success | failed | refunded
+  createdAt     DateTime @default(now())
+}
+
+// ------------------------------------------------------------
+// MEDIA
+// Generic media library so the admin dashboard can manage
+// images/video for ANY section of the site (hero, gallery,
+// amenities, itinerary/day-in-life blocks, individual room
+// types) without new tables per section.
+// ------------------------------------------------------------
+enum MediaType {
+  IMAGE
+  VIDEO
+}
+
+model Media {
+  id         String    @id @default(uuid())
+  type       MediaType
+  url        String // served path, e.g. /uploads/xyz.jpg
+  altText    String?
+  section    String // "hero" | "gallery" | "amenity_pool" | "itinerary_morning" | "room_type"
+  roomTypeId String? // optional link if the media belongs to a specific room type
+  roomType   RoomType? @relation(fields: [roomTypeId], references: [id], onDelete: SetNull)
+  sortOrder  Int       @default(0)
+  isActive   Boolean   @default(true)
+  uploadedAt DateTime  @default(now())
+
+  @@index([section, sortOrder])
+}
+
+// ------------------------------------------------------------
+// ADMIN USERS (minimal — swap for real auth provider later)
+// ------------------------------------------------------------
+model AdminUser {
+  id           String   @id @default(uuid())
+  email        String   @unique
+  passwordHash String
+  name         String
+  role         String   @default("manager") // owner | manager
+  createdAt    DateTime @default(now())
+}

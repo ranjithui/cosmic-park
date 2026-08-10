@@ -1,0 +1,122 @@
+============================================================
+ COSMIC PARK — HOW TO RUN
+ Website (React) + Booking API
+============================================================
+
+You need TWO things running at the same time:
+
+  1. The booking API   -> http://localhost:4000
+  2. The website        -> http://localhost:5173
+
+Start the API FIRST, then the website. The website talks to the
+API through a dev proxy, so the API must already be up.
+
+Requirements: Node.js 18+ and npm (check with:  node -v ).
+
+
+------------------------------------------------------------
+ STEP 1 — START THE BOOKING API  (port 4000)
+------------------------------------------------------------
+
+Folder:  apps\api
+
+The API uses Prisma + PostgreSQL. You need a running PostgreSQL
+database and a connection string.
+
+  1. Open a terminal in the API folder:
+       cd "C:\Users\USER\ui ux\cosmic-park\apps\api"
+
+  2. Create the .env file (first time only):
+       copy .env.example .env
+     Then edit .env and set:
+       - DATABASE_URL   -> your PostgreSQL connection string
+       - JWT_SECRET     -> any long random string
+
+  3. Install, set up the database, seed sample data (first time only):
+       npm install
+       npx prisma generate
+       npx prisma migrate dev --name init
+       npm run seed
+
+  4. Start the API:
+       npm run dev
+
+     You should see:
+       Cosmic Park booking API listening on http://localhost:4000
+
+  Seeded admin login (change it):  admin@cosmicpark.in / ChangeMe123!
+
+  NOTE: The "DB_PROVIDER=sqlite" shortcut in the API README does
+  NOT work as written (Prisma rejects env() in the provider, and
+  SQLite doesn't support the schema's enums). Use PostgreSQL.
+
+
+------------------------------------------------------------
+ STEP 2 — START THE WEBSITE  (port 5173)
+------------------------------------------------------------
+
+Folder:  apps\web
+
+  1. Open a SECOND terminal here:
+       cd "C:\Users\USER\ui ux\cosmic-park\apps\web"
+
+  2. Install dependencies (first time only):
+       npm install
+
+  3. Start the website:
+       npm run dev
+
+  4. Open in your browser:
+       http://localhost:5173
+
+
+------------------------------------------------------------
+ TRY THE BOOKING FLOW
+------------------------------------------------------------
+
+  - Home page: click "Check availability" or use the search bar.
+  - Pick dates that fall inside a seeded rate plan to see tier
+    pricing, e.g. a Festive stay:
+       Check-in:  2026-12-26
+       Check-out: 2026-12-29
+  - Step through: Dates -> Choose stay -> Guest details + add-ons
+    -> Payment -> Confirmation.
+  - Payment is a DEMO (no real gateway / no card charged); it
+    confirms the booking against the API so you can see the full
+    flow end to end.
+
+
+------------------------------------------------------------
+ PRODUCTION BUILD (optional)
+------------------------------------------------------------
+
+  npm run build      -> outputs the site to  dist\
+  npm run preview    -> serves the built site locally
+
+  Pointing at a deployed API instead of localhost:
+    Copy .env.example to .env and set:
+      VITE_API_BASE_URL=https://your-api-domain
+    (Leave it blank for local dev — the proxy handles it.)
+
+
+------------------------------------------------------------
+ TROUBLESHOOTING
+------------------------------------------------------------
+
+  - Blank prices / "Could not reach the booking service":
+      The API isn't running. Start it (Step 1) on port 4000.
+
+  - "No availability for these dates":
+      Those dates are already booked/blocked, or fall outside a
+      seeded rate plan. Try a different range (see example above).
+
+  - Port already in use:
+      Something else is on 4000 or 5173. Stop it, or change the
+      port (API: PORT in .env;  website: server.port in
+      vite.config.js).
+
+  - Images show as striped "PHOTO" placeholders:
+      That's expected until real images are uploaded via the admin
+      dashboard (http://localhost:4000/admin). The site falls back
+      to placeholders automatically.
+============================================================

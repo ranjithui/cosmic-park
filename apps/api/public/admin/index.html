@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Cosmic Park — Admin</title>
+<link rel="stylesheet" href="/admin/css/style.css" />
+</head>
+<body>
+
+<!-- ===================== LOGIN SCREEN ===================== -->
+<section id="loginScreen" class="login-screen">
+  <div class="login-card">
+    <h1>Cosmic Park Admin</h1>
+    <p class="muted">Sign in to manage bookings, rates, and media.</p>
+    <form id="loginForm">
+      <label>Email
+        <input type="email" id="loginEmail" value="admin@cosmicpark.in" required />
+      </label>
+      <label>Password
+        <input type="password" id="loginPassword" required />
+      </label>
+      <button type="submit">Sign in</button>
+      <p id="loginError" class="error-text"></p>
+    </form>
+  </div>
+</section>
+
+<!-- ===================== APP SHELL ===================== -->
+<div id="appShell" class="app-shell hidden">
+
+  <aside class="sidebar">
+    <div class="brand">Cosmic Park</div>
+    <nav>
+      <button class="nav-btn active" data-tab="dashboard">Dashboard</button>
+      <button class="nav-btn" data-tab="bookings">Bookings</button>
+      <button class="nav-btn" data-tab="rooms">Rooms &amp; Rates</button>
+      <button class="nav-btn" data-tab="media">Media (Images &amp; Video)</button>
+      <button class="nav-btn" data-tab="addons">Add-ons</button>
+    </nav>
+    <button id="logoutBtn" class="logout-btn">Log out</button>
+  </aside>
+
+  <main class="main-content">
+
+    <!-- ---------- DASHBOARD TAB ---------- -->
+    <section id="tab-dashboard" class="tab-panel">
+      <h2>Overview</h2>
+      <div class="stat-grid" id="statGrid">
+        <div class="stat-card"><span class="stat-label">Active Holds</span><span class="stat-value" data-stat="activeHolds">–</span></div>
+        <div class="stat-card"><span class="stat-label">Confirmed Bookings</span><span class="stat-value" data-stat="confirmedBookings">–</span></div>
+        <div class="stat-card"><span class="stat-label">Arrivals (next 7 days)</span><span class="stat-value" data-stat="upcomingArrivals7d">–</span></div>
+        <div class="stat-card"><span class="stat-label">Total Guests</span><span class="stat-value" data-stat="totalGuests">–</span></div>
+        <div class="stat-card"><span class="stat-label">Revenue This Month</span><span class="stat-value" data-stat="revenueThisMonth">–</span></div>
+      </div>
+    </section>
+
+    <!-- ---------- BOOKINGS TAB ---------- -->
+    <section id="tab-bookings" class="tab-panel hidden">
+      <h2>Bookings</h2>
+      <div class="toolbar">
+        <input type="text" id="bookingSearch" placeholder="Search reference, guest name, or email…" />
+        <select id="bookingStatusFilter">
+          <option value="">All statuses</option>
+          <option value="HELD">Held</option>
+          <option value="CONFIRMED">Confirmed</option>
+          <option value="CANCELLED">Cancelled</option>
+          <option value="COMPLETED">Completed</option>
+        </select>
+        <button id="bookingSearchBtn">Search</button>
+      </div>
+      <table class="data-table">
+        <thead>
+          <tr>
+            <th>Reference</th><th>Guest</th><th>Room Type</th><th>Check-in</th><th>Check-out</th>
+            <th>Status</th><th>Total</th><th>Actions</th>
+          </tr>
+        </thead>
+        <tbody id="bookingsTableBody"></tbody>
+      </table>
+      <div id="bookingsPagination" class="pagination"></div>
+    </section>
+
+    <!-- ---------- ROOMS & RATES TAB ---------- -->
+    <section id="tab-rooms" class="tab-panel hidden">
+      <h2>Room Types</h2>
+      <div id="roomTypeList" class="card-list"></div>
+
+      <h3>Seasonal Rate Plans</h3>
+      <div class="toolbar">
+        <select id="rateRoomTypeSelect"></select>
+      </div>
+      <table class="data-table">
+        <thead><tr><th>Name</th><th>Start</th><th>End</th><th>Nightly Rate</th><th>Priority</th><th></th></tr></thead>
+        <tbody id="ratePlanTableBody"></tbody>
+      </table>
+
+      <form id="newRatePlanForm" class="inline-form">
+        <input type="text" id="rpName" placeholder="Plan name (e.g. Peak Season)" required />
+        <input type="date" id="rpStart" required />
+        <input type="date" id="rpEnd" required />
+        <input type="number" id="rpRate" placeholder="Nightly rate ₹" required />
+        <input type="number" id="rpPriority" placeholder="Priority" value="0" />
+        <button type="submit">Add Rate Plan</button>
+      </form>
+    </section>
+
+    <!-- ---------- MEDIA TAB ---------- -->
+    <section id="tab-media" class="tab-panel hidden">
+      <h2>Media — Images &amp; Video by Section</h2>
+      <p class="muted">Upload photos and video for every part of the site — hero banner, gallery, amenities, itinerary blocks, or a specific room type. Changes here reflect live on the website.</p>
+
+      <form id="mediaUploadForm" class="inline-form">
+        <select id="mediaSection" required>
+          <option value="">Section…</option>
+          <optgroup label="Home page">
+            <option value="hero">Home — Hero banner</option>
+            <option value="gallery">Home — Mosaic 1 (Pool deck)</option>
+            <option value="amenity_bedroom">Home — Mosaic 2 (Bedroom)</option>
+            <option value="amenity_bonfire">Home — Mosaic 3 (Bonfire pit)</option>
+          </optgroup>
+          <optgroup label="Gallery page">
+            <option value="gallery_pool">Gallery — Private pool &amp; deck</option>
+            <option value="gallery_lawn">Gallery — The lawn at golden hour</option>
+            <option value="gallery_bedroom">Gallery — One of eight bedrooms</option>
+            <option value="gallery_bath">Gallery — Soaking bathtub</option>
+            <option value="gallery_dining">Gallery — Al fresco dining</option>
+            <option value="gallery_bonfire">Gallery — Bonfire evenings</option>
+            <option value="gallery_games">Gallery — Badminton &amp; football</option>
+            <option value="gallery_carrom">Gallery — Carrom &amp; indoor games</option>
+            <option value="gallery_forest">Gallery — Forest &amp; mountain views</option>
+            <option value="gallery_morning">Gallery — Morning: first light</option>
+            <option value="gallery_night">Gallery — Night: fire &amp; stars</option>
+          </optgroup>
+          <optgroup label="Other pages">
+            <option value="story_hero">Our Story — Hero</option>
+            <option value="room_type">Room type gallery (booking flow)</option>
+          </optgroup>
+        </select>
+        <input type="text" id="mediaAlt" placeholder="Alt text / caption" />
+        <input type="file" id="mediaFile" accept="image/*,video/*" required />
+        <button type="submit">Upload</button>
+      </form>
+      <p id="mediaUploadStatus" class="muted"></p>
+
+      <div class="toolbar">
+        <select id="mediaSectionFilter">
+          <option value="">All sections</option>
+          <optgroup label="Home page">
+            <option value="hero">Home — Hero banner</option>
+            <option value="gallery">Home — Mosaic 1 (Pool deck)</option>
+            <option value="amenity_bedroom">Home — Mosaic 2 (Bedroom)</option>
+            <option value="amenity_bonfire">Home — Mosaic 3 (Bonfire pit)</option>
+          </optgroup>
+          <optgroup label="Gallery page">
+            <option value="gallery_pool">Gallery — Private pool &amp; deck</option>
+            <option value="gallery_lawn">Gallery — The lawn at golden hour</option>
+            <option value="gallery_bedroom">Gallery — One of eight bedrooms</option>
+            <option value="gallery_bath">Gallery — Soaking bathtub</option>
+            <option value="gallery_dining">Gallery — Al fresco dining</option>
+            <option value="gallery_bonfire">Gallery — Bonfire evenings</option>
+            <option value="gallery_games">Gallery — Badminton &amp; football</option>
+            <option value="gallery_carrom">Gallery — Carrom &amp; indoor games</option>
+            <option value="gallery_forest">Gallery — Forest &amp; mountain views</option>
+            <option value="gallery_morning">Gallery — Morning: first light</option>
+            <option value="gallery_night">Gallery — Night: fire &amp; stars</option>
+          </optgroup>
+          <optgroup label="Other pages">
+            <option value="story_hero">Our Story — Hero</option>
+            <option value="room_type">Room type gallery (booking flow)</option>
+          </optgroup>
+        </select>
+      </div>
+
+      <div id="mediaGrid" class="media-grid"></div>
+    </section>
+
+    <!-- ---------- ADD-ONS TAB ---------- -->
+    <section id="tab-addons" class="tab-panel hidden">
+      <h2>Add-on Services</h2>
+      <table class="data-table">
+        <thead><tr><th>Name</th><th>Unit</th><th>Price</th><th>GST %</th><th>Active</th></tr></thead>
+        <tbody id="addonsTableBody"></tbody>
+      </table>
+
+      <form id="newAddonForm" class="inline-form">
+        <input type="text" id="addonName" placeholder="Name (e.g. Private Chef)" required />
+        <select id="addonUnit">
+          <option value="per_person">Per person</option>
+          <option value="per_booking">Per booking</option>
+          <option value="per_night">Per night</option>
+        </select>
+        <input type="number" id="addonPrice" placeholder="Price ₹" required />
+        <input type="number" id="addonTax" placeholder="GST %" value="18" />
+        <button type="submit">Add Service</button>
+      </form>
+    </section>
+
+  </main>
+</div>
+
+<script src="/admin/js/app.js"></script>
+</body>
+</html>

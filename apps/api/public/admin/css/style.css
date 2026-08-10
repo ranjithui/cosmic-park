@@ -1,0 +1,112 @@
+:root {
+  --ink: #1f2a24;
+  --moss: #3f5b45;
+  --stone: #f4f2ec;
+  --card: #ffffff;
+  --border: #e3e0d6;
+  --accent: #8a6d3b;
+  --danger: #b3452f;
+  font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+}
+
+* { box-sizing: border-box; }
+body { margin: 0; background: var(--stone); color: var(--ink); }
+.hidden { display: none !important; }
+.muted { color: #6b6b62; font-size: 0.9rem; }
+.error-text { color: var(--danger); font-size: 0.9rem; min-height: 1.2em; }
+
+/* ---------- Login ---------- */
+.login-screen {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.login-card {
+  background: var(--card);
+  padding: 2.5rem;
+  border-radius: 12px;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.08);
+  width: 320px;
+}
+.login-card h1 { margin: 0 0 0.25rem; font-size: 1.4rem; }
+.login-card form { display: flex; flex-direction: column; gap: 0.9rem; margin-top: 1rem; }
+.login-card label { display: flex; flex-direction: column; font-size: 0.85rem; gap: 0.3rem; }
+.login-card input { padding: 0.55rem 0.7rem; border: 1px solid var(--border); border-radius: 6px; font-size: 0.95rem; }
+.login-card button, .toolbar button, .inline-form button {
+  background: var(--moss); color: white; border: none; padding: 0.6rem 1rem;
+  border-radius: 6px; cursor: pointer; font-size: 0.9rem;
+}
+.login-card button:hover, .toolbar button:hover, .inline-form button:hover { opacity: 0.9; }
+
+/* ---------- App shell ---------- */
+.app-shell { display: flex; min-height: 100vh; }
+.sidebar {
+  width: 220px; background: var(--ink); color: white;
+  display: flex; flex-direction: column; padding: 1.25rem 1rem;
+}
+.brand { font-weight: 700; font-size: 1.1rem; margin-bottom: 1.5rem; }
+.sidebar nav { display: flex; flex-direction: column; gap: 0.3rem; flex: 1; }
+.nav-btn {
+  background: none; border: none; color: #cfd6cf; text-align: left;
+  padding: 0.6rem 0.7rem; border-radius: 6px; cursor: pointer; font-size: 0.92rem;
+}
+.nav-btn:hover { background: rgba(255,255,255,0.06); }
+.nav-btn.active { background: var(--moss); color: white; }
+.logout-btn {
+  background: none; border: 1px solid #4a544c; color: #cfd6cf;
+  padding: 0.5rem; border-radius: 6px; cursor: pointer;
+}
+
+.main-content { flex: 1; padding: 2rem 2.5rem; overflow-y: auto; }
+.tab-panel h2 { margin-top: 0; }
+
+/* ---------- Stat grid ---------- */
+.stat-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 1rem; margin-top: 1rem; }
+.stat-card {
+  background: var(--card); border: 1px solid var(--border); border-radius: 10px;
+  padding: 1.1rem 1.2rem; display: flex; flex-direction: column; gap: 0.4rem;
+}
+.stat-label { font-size: 0.8rem; color: #6b6b62; }
+.stat-value { font-size: 1.6rem; font-weight: 700; color: var(--moss); }
+
+/* ---------- Toolbar / forms ---------- */
+.toolbar { display: flex; gap: 0.6rem; margin: 1rem 0; flex-wrap: wrap; }
+.toolbar input, .toolbar select { padding: 0.5rem 0.6rem; border: 1px solid var(--border); border-radius: 6px; }
+.inline-form { display: flex; gap: 0.6rem; margin: 1rem 0; flex-wrap: wrap; align-items: center; }
+.inline-form input, .inline-form select { padding: 0.5rem 0.6rem; border: 1px solid var(--border); border-radius: 6px; }
+
+/* ---------- Table ---------- */
+.data-table { width: 100%; border-collapse: collapse; background: var(--card); border-radius: 8px; overflow: hidden; }
+.data-table th, .data-table td { padding: 0.65rem 0.8rem; border-bottom: 1px solid var(--border); text-align: left; font-size: 0.88rem; }
+.data-table th { background: #efece2; font-weight: 600; }
+.status-pill { padding: 0.15rem 0.55rem; border-radius: 999px; font-size: 0.75rem; font-weight: 600; }
+.status-HELD { background: #fdeecb; color: #8a5b12; }
+.status-CONFIRMED { background: #dcefe0; color: #226b3a; }
+.status-CANCELLED { background: #f6dedb; color: var(--danger); }
+.status-COMPLETED { background: #e0e6f5; color: #2f3f8f; }
+.row-actions button {
+  margin-right: 0.3rem; padding: 0.3rem 0.55rem; font-size: 0.78rem;
+  border: 1px solid var(--border); background: white; border-radius: 5px; cursor: pointer;
+}
+.row-actions button.danger { color: var(--danger); border-color: var(--danger); }
+.pagination { margin-top: 0.8rem; display: flex; gap: 0.4rem; }
+.pagination button { padding: 0.35rem 0.7rem; border: 1px solid var(--border); background: white; border-radius: 5px; cursor: pointer; }
+
+/* ---------- Card list (room types) ---------- */
+.card-list { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 1rem; margin-bottom: 1.5rem; }
+.room-type-card {
+  background: var(--card); border: 1px solid var(--border); border-radius: 10px; padding: 1rem;
+}
+.room-type-card h4 { margin: 0 0 0.3rem; }
+
+/* ---------- Media grid ---------- */
+.media-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); gap: 1rem; margin-top: 1rem; }
+.media-item {
+  background: var(--card); border: 1px solid var(--border); border-radius: 8px; overflow: hidden;
+  display: flex; flex-direction: column;
+}
+.media-item img, .media-item video { width: 100%; height: 120px; object-fit: cover; background: #000; }
+.media-item .media-meta { padding: 0.5rem 0.6rem; font-size: 0.78rem; display: flex; flex-direction: column; gap: 0.3rem; }
+.media-item .media-actions { display: flex; gap: 0.3rem; padding: 0 0.6rem 0.6rem; }
+.media-item .media-actions button { flex: 1; font-size: 0.75rem; padding: 0.3rem; border-radius: 5px; border: 1px solid var(--border); background: white; cursor: pointer; }

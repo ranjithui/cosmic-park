@@ -1,0 +1,689 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Cosmic Park — Wireframe (Home + Booking)</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,500;0,9..144,600;1,9..144,400&family=Karla:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --forest:#2F3D33; --moss:#455443; --clay:#B5613F; --clay-dk:#9C4E30;
+    --sand:#E7DECB; --cream:#F4EEE1; --paper:#FBF8F1; --card:#FFFFFF;
+    --ink:#2A2521; --muted:#6E685C; --line:#E3DAC8; --line-2:#D6CBB4;
+    --ok:#3E6B4A; --shadow:0 1px 2px rgba(42,37,33,.05), 0 8px 30px rgba(42,37,33,.07);
+    --shadow-lg:0 20px 60px rgba(42,37,33,.14);
+    --r:14px; --r-sm:10px; --maxw:1180px;
+  }
+  *{box-sizing:border-box}
+  html{scroll-behavior:smooth}
+  @media (prefers-reduced-motion: reduce){ html{scroll-behavior:auto} *{animation:none!important; transition:none!important} }
+  body{
+    margin:0; background:var(--paper); color:var(--ink);
+    font-family:'Karla', system-ui, -apple-system, sans-serif;
+    font-size:16px; line-height:1.65; -webkit-font-smoothing:antialiased;
+  }
+  h1,h2,h3,h4{font-family:'Fraunces', Georgia, serif; font-weight:500; line-height:1.12; margin:0; color:var(--forest); letter-spacing:-.01em}
+  p{margin:0 0 1rem}
+  a{color:inherit; text-decoration:none}
+  button{font-family:inherit; cursor:pointer}
+  .wrap{max-width:var(--maxw); margin:0 auto; padding:0 24px}
+  .eyebrow{font-size:.72rem; letter-spacing:.22em; text-transform:uppercase; color:var(--clay); font-weight:700; margin:0 0 .8rem}
+  .muted{color:var(--muted)}
+  .serif-it{font-family:'Fraunces',serif; font-style:italic}
+
+  /* wireframe badge */
+  .wf-badge{position:fixed; z-index:60; right:14px; bottom:14px; background:var(--forest); color:var(--cream);
+    font-size:.68rem; letter-spacing:.12em; text-transform:uppercase; font-weight:700; padding:8px 12px; border-radius:999px;
+    box-shadow:var(--shadow-lg); opacity:.92}
+
+  /* NAV */
+  header.nav{position:sticky; top:0; z-index:50; background:rgba(251,248,241,.86); backdrop-filter:blur(10px); border-bottom:1px solid var(--line)}
+  .nav-inner{display:flex; align-items:center; gap:20px; height:70px}
+  .brand{display:flex; align-items:center; gap:11px; cursor:pointer}
+  .brand .mark{width:34px; height:34px; border-radius:50%; background:radial-gradient(circle at 32% 30%, #E9B08C, var(--clay) 55%, var(--forest)); box-shadow:inset 0 0 0 2px rgba(255,255,255,.35)}
+  .brand b{font-family:'Fraunces',serif; font-weight:600; font-size:1.18rem; color:var(--forest); letter-spacing:.01em}
+  .brand small{display:block; font-size:.6rem; letter-spacing:.28em; text-transform:uppercase; color:var(--muted); margin-top:-3px}
+  .nav-links{display:flex; gap:26px; margin-left:auto; align-items:center}
+  .nav-links a{font-size:.9rem; color:var(--moss); font-weight:500; padding:6px 0; position:relative}
+  .nav-links a:hover{color:var(--forest)}
+  .nav-links a::after{content:''; position:absolute; left:0; bottom:0; height:2px; width:0; background:var(--clay); transition:width .2s}
+  .nav-links a:hover::after{width:100%}
+  .btn{border:none; border-radius:999px; padding:12px 22px; font-weight:700; font-size:.9rem; letter-spacing:.01em; transition:transform .12s, background .2s, box-shadow .2s; display:inline-flex; align-items:center; gap:8px}
+  .btn:active{transform:translateY(1px)}
+  .btn-primary{background:var(--clay); color:#fff; box-shadow:0 6px 18px rgba(181,97,63,.28)}
+  .btn-primary:hover{background:var(--clay-dk)}
+  .btn-ghost{background:transparent; color:var(--forest); border:1.5px solid var(--line-2)}
+  .btn-ghost:hover{border-color:var(--forest); background:#fff}
+  .btn-lg{padding:15px 30px; font-size:1rem}
+  .navbtn{margin-left:6px}
+  .hamburger{display:none}
+
+  /* generic photo placeholder (wireframe) */
+  .ph{position:relative; background:
+      repeating-linear-gradient(45deg, rgba(69,84,67,.045) 0 14px, transparent 14px 28px), var(--sand);
+      border:1px solid var(--line-2); border-radius:var(--r); overflow:hidden; color:var(--moss)}
+  .ph .ph-tag{position:absolute; top:10px; left:10px; background:rgba(47,61,51,.82); color:var(--cream); font-size:.62rem; letter-spacing:.14em; text-transform:uppercase; padding:5px 9px; border-radius:6px; font-weight:700}
+  .ph .ph-mid{position:absolute; inset:0; display:flex; align-items:center; justify-content:center; text-align:center; font-family:'Fraunces',serif; font-style:italic; font-size:1rem; opacity:.72; padding:16px}
+  .ico{width:26px;height:26px; stroke:var(--clay); fill:none; stroke-width:1.6}
+
+  /* HERO */
+  .hero{position:relative}
+  .hero .ph{height:min(74vh,620px); border-radius:0; border-left:none; border-right:none}
+  .hero-overlay{position:absolute; inset:0; background:linear-gradient(180deg, rgba(30,40,32,.15), rgba(30,40,32,.55)); display:flex; align-items:flex-end}
+  .hero-content{color:#fff; padding:0 24px 54px; max-width:var(--maxw); margin:0 auto; width:100%}
+  .hero-content .eyebrow{color:#E9C9A8}
+  .hero h1{color:#fff; font-size:clamp(2.4rem,6vw,4.6rem); font-weight:400; max-width:14ch; text-shadow:0 2px 30px rgba(0,0,0,.3)}
+  .hero p.lede{color:rgba(255,255,255,.92); font-size:clamp(1rem,2.2vw,1.28rem); max-width:52ch; margin-top:1rem; font-weight:300}
+  .hero-cta{display:flex; gap:14px; margin-top:26px; flex-wrap:wrap}
+
+  /* floating availability bar */
+  .avail-bar{max-width:var(--maxw); margin:-42px auto 0; position:relative; z-index:5; background:var(--card); border:1px solid var(--line); border-radius:var(--r); box-shadow:var(--shadow-lg); padding:16px; display:grid; grid-template-columns:1.2fr 1fr 1fr 1fr auto; gap:12px; align-items:end}
+  .field label{display:block; font-size:.68rem; letter-spacing:.14em; text-transform:uppercase; color:var(--muted); font-weight:700; margin:0 0 5px}
+  .field input, .field select{width:100%; border:1px solid var(--line-2); border-radius:var(--r-sm); padding:11px 12px; font-family:inherit; font-size:.95rem; color:var(--ink); background:var(--paper)}
+  .field input:focus, .field select:focus{outline:2px solid var(--clay); outline-offset:1px; border-color:var(--clay)}
+
+  section{padding:76px 0}
+  .section-head{max-width:60ch; margin-bottom:40px}
+  .section-head h2{font-size:clamp(1.8rem,3.6vw,2.7rem)}
+  .section-head p{font-size:1.08rem; color:var(--muted); margin-top:.6rem}
+
+  /* features grid */
+  .feat-grid{display:grid; grid-template-columns:repeat(3,1fr); gap:22px}
+  .feat{background:var(--card); border:1px solid var(--line); border-radius:var(--r); padding:26px; box-shadow:var(--shadow); transition:transform .2s, box-shadow .2s}
+  .feat:hover{transform:translateY(-4px); box-shadow:var(--shadow-lg)}
+  .feat .ic{width:46px; height:46px; border-radius:12px; background:var(--cream); display:flex; align-items:center; justify-content:center; margin-bottom:14px}
+  .feat h3{font-size:1.24rem; margin-bottom:.4rem}
+  .feat p{color:var(--muted); font-size:.96rem; margin:0}
+
+  /* day itinerary */
+  .day{background:var(--forest); color:var(--cream)}
+  .day h2{color:#fff}
+  .day .section-head p{color:rgba(244,238,225,.8)}
+  .timeline{display:grid; grid-template-columns:repeat(3,1fr); gap:18px}
+  .beat{background:rgba(255,255,255,.05); border:1px solid rgba(255,255,255,.12); border-radius:var(--r); padding:20px}
+  .beat .t{font-size:.7rem; letter-spacing:.16em; text-transform:uppercase; color:#E9C9A8; font-weight:700}
+  .beat h4{color:#fff; font-size:1.16rem; margin:.5rem 0 .4rem; font-weight:500}
+  .beat p{color:rgba(244,238,225,.72); font-size:.9rem; margin:0}
+  .beat .tie{display:inline-block; margin-top:12px; font-size:.72rem; color:#cfe0cf; border:1px solid rgba(255,255,255,.18); border-radius:999px; padding:3px 10px}
+
+  /* villa glimpse */
+  .glimpse{display:grid; grid-template-columns:1.15fr .85fr; gap:40px; align-items:center}
+  .stat-row{display:flex; gap:34px; margin:24px 0 28px; flex-wrap:wrap}
+  .stat b{font-family:'Fraunces',serif; font-size:2.1rem; color:var(--clay); font-weight:600; display:block; line-height:1}
+  .stat span{font-size:.82rem; color:var(--muted); letter-spacing:.04em}
+  .mosaic{display:grid; grid-template-columns:1fr 1fr; grid-template-rows:130px 130px; gap:12px}
+  .mosaic .ph:first-child{grid-row:span 2; height:100%}
+  .mosaic .ph{height:130px}
+
+  /* CTA band */
+  .cta-band{background:linear-gradient(120deg, var(--clay), #C9784F); color:#fff; border-radius:22px; padding:56px; text-align:center; box-shadow:var(--shadow-lg)}
+  .cta-band h2{color:#fff; font-size:clamp(1.9rem,4vw,2.8rem)}
+  .cta-band p{color:rgba(255,255,255,.9); max-width:52ch; margin:1rem auto 1.8rem}
+
+  /* FOOTER */
+  footer{background:var(--forest); color:rgba(244,238,225,.75); padding:56px 0 30px; margin-top:0}
+  .foot-grid{display:grid; grid-template-columns:1.6fr 1fr 1fr 1fr; gap:30px}
+  footer h5{color:#fff; font-family:'Karla'; font-size:.74rem; letter-spacing:.16em; text-transform:uppercase; margin:0 0 14px; font-weight:700}
+  footer ul{list-style:none; padding:0; margin:0}
+  footer li{margin-bottom:9px}
+  footer a{font-size:.92rem; color:rgba(244,238,225,.72)}
+  footer a:hover{color:#fff}
+  .foot-bottom{border-top:1px solid rgba(255,255,255,.12); margin-top:36px; padding-top:20px; display:flex; justify-content:space-between; flex-wrap:wrap; gap:10px; font-size:.8rem; color:rgba(244,238,225,.5)}
+
+  /* ============ BOOKING PAGE ============ */
+  .book-head{background:var(--forest); color:#fff; padding:44px 0 36px}
+  .book-head .wrap{display:flex; justify-content:space-between; align-items:flex-end; gap:20px; flex-wrap:wrap}
+  .book-head h1{color:#fff; font-size:clamp(2rem,4vw,3rem); font-weight:400}
+  .book-head p{color:rgba(244,238,225,.8); margin:.4rem 0 0}
+  .crumb{font-size:.82rem; color:#E9C9A8; cursor:pointer}
+  .crumb:hover{text-decoration:underline}
+
+  .book-layout{display:grid; grid-template-columns:1fr 380px; gap:34px; align-items:start; padding:44px 0 90px}
+  .step{background:var(--card); border:1px solid var(--line); border-radius:var(--r); padding:26px; box-shadow:var(--shadow); margin-bottom:22px}
+  .step-title{display:flex; align-items:center; gap:12px; margin-bottom:20px}
+  .step-num{width:30px; height:30px; border-radius:50%; background:var(--forest); color:#fff; font-family:'Fraunces',serif; font-weight:600; display:flex; align-items:center; justify-content:center; font-size:.95rem; flex:none}
+  .step-title h3{font-size:1.3rem}
+  .grid-2{display:grid; grid-template-columns:1fr 1fr; gap:16px}
+  .grid-3{display:grid; grid-template-columns:repeat(3,1fr); gap:16px}
+  .hint{font-size:.85rem; padding:10px 12px; border-radius:var(--r-sm); margin-top:12px; display:flex; gap:8px; align-items:flex-start}
+  .hint.warn{background:#FBE7DF; color:#8A3D1E; border:1px solid #E8C4AE}
+  .hint.ok{background:#E7F0E8; color:#2C5238; border:1px solid #BFD8C4}
+
+  /* stay option cards */
+  .opt{border:2px solid var(--line-2); border-radius:var(--r); padding:18px; display:flex; gap:16px; cursor:pointer; transition:border-color .2s, background .2s; margin-bottom:14px; background:var(--paper)}
+  .opt:hover{border-color:var(--moss)}
+  .opt.sel{border-color:var(--clay); background:#fff; box-shadow:0 0 0 3px rgba(181,97,63,.1)}
+  .opt .ph{width:120px; height:88px; flex:none; border-radius:var(--r-sm)}
+  .opt h4{font-size:1.12rem; margin-bottom:3px}
+  .opt .price{margin-left:auto; text-align:right; flex:none}
+  .opt .price b{font-family:'Fraunces',serif; font-size:1.3rem; color:var(--forest)}
+  .opt .price span{display:block; font-size:.74rem; color:var(--muted)}
+  .radio-dot{width:20px;height:20px;border-radius:50%;border:2px solid var(--line-2); flex:none; margin-top:3px; position:relative}
+  .opt.sel .radio-dot{border-color:var(--clay)}
+  .opt.sel .radio-dot::after{content:'';position:absolute;inset:3px;border-radius:50%;background:var(--clay)}
+
+  /* addons */
+  .addon{display:flex; align-items:center; gap:14px; padding:16px 0; border-bottom:1px solid var(--line)}
+  .addon:last-child{border-bottom:none}
+  .addon .ic{width:42px;height:42px;border-radius:10px;background:var(--cream);display:flex;align-items:center;justify-content:center;flex:none}
+  .addon .info{flex:1; min-width:0}
+  .addon .info h4{font-size:1.04rem; margin-bottom:1px}
+  .addon .info span{font-size:.84rem; color:var(--muted)}
+  .addon .gst-tag{font-size:.64rem; color:var(--clay); font-weight:700; letter-spacing:.08em}
+  .stepper{display:flex; align-items:center; gap:0; border:1px solid var(--line-2); border-radius:999px; overflow:hidden; flex:none}
+  .stepper button{width:34px;height:34px;border:none;background:var(--paper);color:var(--forest);font-size:1.2rem;line-height:1}
+  .stepper button:hover{background:var(--sand)}
+  .stepper span{min-width:38px; text-align:center; font-weight:700; font-size:.95rem}
+  .seg{display:flex; border:1px solid var(--line-2); border-radius:999px; overflow:hidden}
+  .seg button{border:none; background:var(--paper); padding:8px 14px; font-size:.82rem; font-weight:600; color:var(--moss)}
+  .seg button.on{background:var(--forest); color:#fff}
+  .toggle{width:46px;height:26px;border-radius:999px;background:var(--line-2);border:none;position:relative;flex:none;transition:background .2s}
+  .toggle.on{background:var(--clay)}
+  .toggle::after{content:'';position:absolute;top:3px;left:3px;width:20px;height:20px;border-radius:50%;background:#fff;transition:left .2s}
+  .toggle.on::after{left:23px}
+
+  /* summary */
+  .summary{position:sticky; top:88px; background:var(--card); border:1px solid var(--line); border-radius:var(--r); box-shadow:var(--shadow-lg); overflow:hidden}
+  .summary .sum-ph{height:130px}
+  .sum-body{padding:22px}
+  .sum-body h3{font-size:1.25rem; margin-bottom:2px}
+  .line{display:flex; justify-content:space-between; gap:10px; font-size:.92rem; padding:7px 0; color:var(--ink)}
+  .line .muted{color:var(--muted)}
+  .line.sub{border-top:1px dashed var(--line-2); margin-top:6px; padding-top:12px; font-weight:600}
+  .line.total{border-top:2px solid var(--forest); margin-top:10px; padding-top:14px; font-size:1.15rem; font-weight:700; color:var(--forest); font-family:'Fraunces',serif}
+  .line.total b{font-family:'Fraunces',serif}
+  .deposit-note{background:var(--cream); border-radius:var(--r-sm); padding:10px 12px; font-size:.8rem; color:var(--moss); margin-top:12px}
+  .empty-sum{padding:40px 22px; text-align:center; color:var(--muted); font-size:.92rem}
+  .pay-now{background:var(--forest); color:#fff; text-align:center; padding:14px; margin:16px -22px -22px; }
+  .pay-now .amt{font-family:'Fraunces',serif; font-size:1.5rem; font-weight:600; display:block}
+  .pay-now small{color:rgba(244,238,225,.7); font-size:.74rem}
+
+  .policy-row{display:flex; gap:18px; flex-wrap:wrap; margin-top:6px}
+  .policy-row .pc{flex:1; min-width:150px; background:var(--paper); border:1px solid var(--line); border-radius:var(--r-sm); padding:12px 14px}
+  .policy-row .pc b{display:block; font-size:.72rem; letter-spacing:.1em; text-transform:uppercase; color:var(--clay); margin-bottom:2px}
+  .policy-row .pc span{font-size:.9rem}
+  .flag{font-size:.66rem; background:#FBE7DF; color:#8A3D1E; border-radius:5px; padding:1px 6px; font-weight:700; letter-spacing:.04em; vertical-align:middle}
+
+  @media (max-width:1000px){
+    .book-layout{grid-template-columns:1fr}
+    .summary{position:static}
+    .glimpse{grid-template-columns:1fr}
+    .avail-bar{grid-template-columns:1fr 1fr}
+  }
+  @media (max-width:760px){
+    .nav-links{display:none}
+    .feat-grid,.timeline,.grid-3{grid-template-columns:1fr}
+    .grid-2{grid-template-columns:1fr}
+    .avail-bar{grid-template-columns:1fr; margin-top:-30px}
+    .cta-band{padding:36px 22px}
+    .foot-grid{grid-template-columns:1fr 1fr}
+    section{padding:52px 0}
+  }
+</style>
+</head>
+<body>
+<div id="root"></div>
+<div class="wf-badge">Wireframe · v0.1</div>
+
+<script src="https://unpkg.com/react@18/umd/react.production.min.js" crossorigin></script>
+<script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js" crossorigin></script>
+<script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+
+<script type="text/babel">
+const { useState, useMemo, useEffect } = React;
+
+/* ---------- tiny inline icon set (Lucide-style strokes) ---------- */
+const Icon = ({d, ...p}) => (
+  <svg className="ico" viewBox="0 0 24 24" {...p}><path d={d}/></svg>
+);
+const ICONS = {
+  pool:"M2 18c1.5 1 3 1 4.5 0S9 17 10.5 18s3 1 4.5 0 3-1 4.5 0M2 14c1.5 1 3 1 4.5 0S9 13 10.5 14s3 1 4.5 0 3-1 4.5 0M7 12V6a2 2 0 1 1 4 0M13 12V6a2 2 0 1 1 4 0",
+  lawn:"M12 22V8m0 0c0-3 2-5 5-5-.5 3-2.5 5-5 5Zm0 3c0-2.5-2-4-4.5-4C8 9.5 10 11.5 12 11.5Z",
+  fire:"M12 22a7 7 0 0 0 7-7c0-3-2-5.5-3.5-7C14 9 13 10 12 8 11 6 9 4 8 2 6.5 5 5 8 5 12a7 7 0 0 0 7 10Z",
+  dine:"M4 3v7a2 2 0 0 0 2 2v9M6 3v6M8 3v6M17 3c-1.5 0-2 2.5-2 5s.5 3 2 3v10",
+  racket:"M11 4a6 6 0 1 0 3 11l6 5M11 4a6 6 0 0 1 0 12M8 8h6M8 11h6",
+  bath:"M4 12h16v3a4 4 0 0 1-4 4H8a4 4 0 0 1-4-4v-3ZM6 12V6a2 2 0 0 1 2-2c1 0 1.5.5 2 1M18 19l1 2M6 19l-1 2",
+  spa:"M12 20c0-4-3-6-6-7 3-1 6-3 6-7 0 4 3 6 6 7-3 1-6 3-6 7ZM12 3v2M12 19v2",
+  car:"M5 17h14M6 17l1.5-5A2 2 0 0 1 9.4 10.5h5.2a2 2 0 0 1 1.9 1.5L18 17M6 17v2M18 17v2M7.5 13.5h9",
+  cal:"M8 3v3M16 3v3M4 8h16M5 6h14a1 1 0 0 1 1 1v12a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V7a1 1 0 0 1 1-1Z",
+  users:"M17 20v-2a4 4 0 0 0-4-4H7a4 4 0 0 0-4 4v2M10 10a3 3 0 1 0 0-6 3 3 0 0 0 0 6ZM21 20v-2a4 4 0 0 0-3-3.9M16 4.1a4 4 0 0 1 0 7.8",
+  bed:"M3 18v-6a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2v6M3 14h18M3 18v2M21 18v2M7 10V7h6v3",
+  leaf:"M11 20A7 7 0 0 1 9.8 6.1C13 3 18 3 21 3c0 5 0 10-3.1 13.2A7 7 0 0 1 11 20ZM11 20l-4 2",
+};
+
+const INR = n => '₹' + Math.round(n).toLocaleString('en-IN');
+
+/* seasonal tier for a given night */
+function tierFor(date){
+  const m=date.getMonth(), day=date.getDate(), dow=date.getDay();
+  if((m===11 && day>=20) || (m===0 && day<=5)) return {name:'Festive', rate:85000, min:3};
+  const highSeason=[9,10,11,0,1,2,3,4].includes(m); // Oct–May
+  const weekend=(dow===5 || dow===6);               // Fri/Sat night
+  if(highSeason || weekend) return {name:'Peak', rate:65000, min:2};
+  return {name:'Off-Peak', rate:45000, min:1};
+}
+function nightsBetween(inStr, outStr){
+  if(!inStr || !outStr) return [];
+  const a=new Date(inStr+'T00:00'), b=new Date(outStr+'T00:00');
+  if(!(a<b)) return [];
+  const out=[]; let d=new Date(a);
+  while(d<b){ out.push(new Date(d)); d.setDate(d.getDate()+1); }
+  return out;
+}
+
+/* ---------- shared bits ---------- */
+function Ph({tag, label, style, className=''}){
+  return <div className={"ph "+className} style={style}>
+    {tag && <span className="ph-tag">{tag}</span>}
+    <span className="ph-mid">{label}</span>
+  </div>;
+}
+
+function Nav({go, view}){
+  return <header className="nav">
+    <div className="wrap nav-inner">
+      <div className="brand" onClick={()=>go('home')}>
+        <div className="mark"></div>
+        <div><b>Cosmic Park</b><small>Anaikatti · Coimbatore</small></div>
+      </div>
+      <nav className="nav-links">
+        <a onClick={()=>go('home')}>The Villa</a>
+        <a onClick={()=>go('home')}>Experiences</a>
+        <a onClick={()=>go('home')}>Gallery</a>
+        <a onClick={()=>go('home')}>Rates</a>
+        <a onClick={()=>go('home')}>Location</a>
+      </nav>
+      <button className="btn btn-primary navbtn" onClick={()=>go('booking')}>Book Your Stay</button>
+    </div>
+  </header>;
+}
+
+/* ================= HOME ================= */
+function Home({go}){
+  const features=[
+    {ic:'pool', h:'Private pool with a view', p:'A swimming pool that looks out over mountain, garden, and forest — yours alone for the stay.'},
+    {ic:'lawn', h:'Expansive lawn', p:'Open lawn for outdoor relaxation and family gatherings, from morning chai to evening games.'},
+    {ic:'dine', h:'Al fresco dining', p:'Meals in the open air, with a complimentary breakfast overlooking the hills each morning.'},
+    {ic:'fire', h:'Bonfire evenings', p:'Gather under open skies as the light fades — crackling fire, cool mountain air, and stars.'},
+    {ic:'racket', h:'Room to play', p:'Badminton, football and carrom keep every generation of the group busy through the day.'},
+    {ic:'bath', h:'Slow, indulgent stays', p:'A bathtub to soak in and an unhurried pace — this is a home to settle into, not a hotel to pass through.'},
+  ];
+  const beats=[
+    {t:'Morning', h:'Wake to the hills', p:'Breakfast in the open air as the mountains catch first light.', tie:'Al fresco dining · breakfast included'},
+    {t:'Late morning', h:'Poolside & garden', p:'Unwind by the pool or wander the lawn and garden.', tie:'Pool · lawn'},
+    {t:'Midday', h:'Get moving', p:'A round of badminton or football on the lawn.', tie:'Recreational activities'},
+    {t:'Afternoon', h:'Soak & play', p:'A long bathtub soak, or carrom with the group.', tie:'Bathtub · carrom'},
+    {t:'Evening', h:'Golden hour', p:'Gather outdoors as the light turns to gold.', tie:'Lawn · mountain views'},
+    {t:'Night', h:'Fire & stars', p:'Al fresco dinner, a bonfire, and a sky full of stars.', tie:'Dining · bonfire (add-on)'},
+  ];
+  return <>
+    {/* HERO */}
+    <div className="hero">
+      <Ph tag="Hero photo/video" label="Wide shot — villa exterior at golden hour, pool + lawn + forest behind" />
+      <div className="hero-overlay">
+        <div className="hero-content">
+          <p className="eyebrow">A private 8-bedroom hillside villa</p>
+          <h1>Wake up to the sights and sounds of nature.</h1>
+          <p className="lede">The intimacy of a home with the amenities of a resort — a private pool, open lawns and forest views, without sharing the property with strangers.</p>
+          <div className="hero-cta">
+            <button className="btn btn-primary btn-lg" onClick={()=>go('booking')}>Check availability</button>
+            <button className="btn btn-ghost btn-lg" style={{color:'#fff',borderColor:'rgba(255,255,255,.5)'}} onClick={()=>go('booking')}>Explore the villa</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    {/* AVAILABILITY QUICK BAR */}
+    <div className="wrap">
+      <form className="avail-bar" onSubmit={e=>{e.preventDefault(); go('booking');}}>
+        <div className="field"><label>Check-in</label><input type="date" defaultValue="" /></div>
+        <div className="field"><label>Check-out</label><input type="date" /></div>
+        <div className="field"><label>Guests</label>
+          <select defaultValue="16"><option>2–8</option><option>9–16</option><option value="16">Whole villa (16)</option><option>16+ (extra beds)</option></select>
+        </div>
+        <div className="field"><label>Stay type</label>
+          <select><option>Whole villa</option><option>Family reunion</option><option>Corporate offsite</option></select>
+        </div>
+        <button className="btn btn-primary" type="submit" style={{height:'44px'}}>Search</button>
+      </form>
+    </div>
+
+    {/* SIGNATURE FEATURES */}
+    <section>
+      <div className="wrap">
+        <div className="section-head">
+          <p className="eyebrow">What makes it Cosmic Park</p>
+          <h2>An experience, not just a place to sleep</h2>
+          <p>Eight bedrooms open onto shared spaces built for large families and friends to gather — the amenities of a resort, kept private.</p>
+        </div>
+        <div className="feat-grid">
+          {features.map((f,i)=>(
+            <div className="feat" key={i}>
+              <div className="ic"><Icon d={ICONS[f.ic]} /></div>
+              <h3>{f.h}</h3><p>{f.p}</p>
+            </div>
+          ))}
+        </div>
+      </div>
+    </section>
+
+    {/* DAY ITINERARY */}
+    <section className="day">
+      <div className="wrap">
+        <div className="section-head">
+          <p className="eyebrow" style={{color:'#E9C9A8'}}>A day at Cosmic Park</p>
+          <h2>From first light to firelight</h2>
+          <p>The stay unfolds at its own pace — here's how a day tends to go.</p>
+        </div>
+        <div className="timeline">
+          {beats.map((b,i)=>(
+            <div className="beat" key={i}>
+              <div className="t">{b.t}</div>
+              <h4>{b.h}</h4><p>{b.p}</p>
+              <span className="tie">{b.tie}</span>
+            </div>
+          ))}
+        </div>
+      </div>
+    </section>
+
+    {/* VILLA GLIMPSE */}
+    <section>
+      <div className="wrap glimpse">
+        <div>
+          <p className="eyebrow">The villa</p>
+          <h2>One home. Eight bedrooms. Your group only.</h2>
+          <div className="stat-row">
+            <div className="stat"><b>8</b><span>Bedrooms</span></div>
+            <div className="stat"><b>16</b><span>Base guests <span className="flag">CONFIRM</span></span></div>
+            <div className="stat"><b>1</b><span>Private pool</span></div>
+            <div className="stat"><b>3</b><span>Play sports</span></div>
+          </div>
+          <p className="muted">Booked as a single high-capacity retreat — not a hotel with strangers down the hall. Room-by-room detail is there for groups planning who sleeps where.</p>
+          <button className="btn btn-ghost" style={{marginTop:'8px'}} onClick={()=>go('booking')}>See rates &amp; book →</button>
+        </div>
+        <div className="mosaic">
+          <Ph tag="Photo" label="Pool deck" />
+          <Ph tag="Photo" label="Bedroom" />
+          <Ph tag="Photo" label="Bonfire pit" />
+        </div>
+      </div>
+    </section>
+
+    {/* CTA BAND */}
+    <section style={{paddingTop:0}}>
+      <div className="wrap">
+        <div className="cta-band">
+          <h2>Gather everyone. Book the whole villa.</h2>
+          <p>Reunions, birthdays, long weekends and offsites — pick your dates and we'll hold Cosmic Park just for your group.</p>
+          <button className="btn btn-lg" style={{background:'#fff',color:'var(--clay-dk)'}} onClick={()=>go('booking')}>Check dates &amp; pricing</button>
+        </div>
+      </div>
+    </section>
+
+    <Footer go={go} />
+  </>;
+}
+
+/* ================= BOOKING ================= */
+function Booking({go}){
+  const [checkIn,setCheckIn]=useState('');
+  const [checkOut,setCheckOut]=useState('');
+  const [guests,setGuests]=useState(16);
+  const [mode,setMode]=useState('villa');           // 'villa' | 'rooms'
+  const [addons,setAddons]=useState({bonfire:0, spa:0, meals:0, transfer:'none'});
+  const [breakfast]=useState(true);
+
+  const today=new Date().toISOString().slice(0,10);
+
+  const nights=useMemo(()=>nightsBetween(checkIn,checkOut),[checkIn,checkOut]);
+  const nightCount=nights.length;
+
+  // per-night pricing
+  const perNight=useMemo(()=>nights.map(d=>({date:d, ...tierFor(d)})),[nights]);
+  const roomBase = mode==='villa'
+    ? perNight.reduce((s,n)=>s+n.rate,0)
+    : perNight.reduce((s,n)=>s+ (n.name==='Off-Peak'?7000:9500)*4, 0); // sample 4-bedroom block
+  const BASE_OCC=16, EXTRA=1500;
+  const extraGuests=Math.max(0,guests-BASE_OCC);
+  const extraGuestFee=extraGuests*EXTRA*nightCount;
+  const roomSubtotal=roomBase+extraGuestFee;
+
+  // min stay from check-in night
+  const minStay = perNight.length? perNight[0].min : 1;
+  const belowMin = nightCount>0 && nightCount<minStay;
+
+  // add-on prices
+  const P={bonfire:1000, spa:2500, meal:800, transferOne:2500, transferRound:4500};
+  const transferCost = addons.transfer==='oneway'?P.transferOne : addons.transfer==='round'?P.transferRound : 0;
+  const addonSubtotal = addons.bonfire*P.bonfire + addons.spa*P.spa + addons.meals*P.meal + transferCost;
+
+  const GST=0.18;
+  const roomGST=roomSubtotal*GST;
+  const addonGST=addonSubtotal*GST;
+  const stayTotal=roomSubtotal+roomGST;
+  const addonTotal=addonSubtotal+addonGST;
+  const DEPOSIT=25000;
+  const taxedTotal=stayTotal+addonTotal;
+  const grandTotal=taxedTotal+DEPOSIT;
+  const payNow=taxedTotal*0.30+DEPOSIT;
+
+  const hasDates=nightCount>0 && !belowMin;
+
+  const setAdd=(k,v)=>setAddons(a=>({...a,[k]:v}));
+  const bump=(k,delta,max=200)=>setAddons(a=>({...a,[k]:Math.max(0,Math.min(max,a[k]+delta))}));
+
+  return <>
+    <div className="book-head">
+      <div className="wrap">
+        <div>
+          <span className="crumb" onClick={()=>go('home')}>← Home</span>
+          <h1>Book your stay</h1>
+          <p>Hold the whole of Cosmic Park for your group. Prices shown are indicative placeholders pending final rates.</p>
+        </div>
+        <div style={{textAlign:'right'}}>
+          <div style={{fontSize:'.72rem',letterSpacing:'.14em',textTransform:'uppercase',color:'#E9C9A8',fontWeight:700}}>From</div>
+          <div style={{fontFamily:"'Fraunces',serif",fontSize:'2rem'}}>₹45,000<span style={{fontSize:'.9rem',opacity:.7}}> / night</span></div>
+        </div>
+      </div>
+    </div>
+
+    <div className="wrap book-layout">
+      {/* LEFT: steps */}
+      <div>
+        {/* STEP 1 — dates & guests */}
+        <div className="step">
+          <div className="step-title"><span className="step-num">1</span><h3>Dates &amp; guests</h3></div>
+          <div className="grid-3">
+            <div className="field"><label>Check-in <span className="muted" style={{fontWeight:400}}>· 2:00 PM</span></label>
+              <input type="date" min={today} value={checkIn} onChange={e=>{setCheckIn(e.target.value); if(checkOut && checkOut<=e.target.value) setCheckOut('');}} /></div>
+            <div className="field"><label>Check-out <span className="muted" style={{fontWeight:400}}>· 11:00 AM</span></label>
+              <input type="date" min={checkIn||today} value={checkOut} onChange={e=>setCheckOut(e.target.value)} /></div>
+            <div className="field"><label>Guests</label>
+              <div className="stepper" style={{width:'100%',justifyContent:'space-between'}}>
+                <button type="button" onClick={()=>setGuests(g=>Math.max(1,g-1))}>−</button>
+                <span>{guests}</span>
+                <button type="button" onClick={()=>setGuests(g=>Math.min(24,g+1))}>+</button>
+              </div>
+            </div>
+          </div>
+          {nightCount>0 && !belowMin &&
+            <div className="hint ok"><Icon d={ICONS.cal} style={{width:18,height:18,stroke:'#2C5238'}}/>
+              <span>{nightCount} night{nightCount>1?'s':''} selected · {perNight.map(n=>n.name).join(', ')} pricing applied per night.</span></div>}
+          {belowMin &&
+            <div className="hint warn"><Icon d={ICONS.cal} style={{width:18,height:18,stroke:'#8A3D1E'}}/>
+              <span>These dates fall in a <b>{perNight[0].name}</b> period with a <b>{minStay}-night minimum</b>. Please extend your stay.</span></div>}
+          {extraGuests>0 &&
+            <div className="hint warn"><Icon d={ICONS.users} style={{width:18,height:18,stroke:'#8A3D1E'}}/>
+              <span>{extraGuests} guest{extraGuests>1?'s':''} above the base of 16 — extra mattress at {INR(EXTRA)}/guest/night. <span className="flag">CONFIRM max occupancy</span></span></div>}
+        </div>
+
+        {/* STEP 2 — choose stay */}
+        <div className="step">
+          <div className="step-title"><span className="step-num">2</span><h3>Choose your stay</h3></div>
+          <div className={"opt "+(mode==='villa'?'sel':'')} onClick={()=>setMode('villa')}>
+            <div className="radio-dot"></div>
+            <Ph tag="Photo" label="The villa" />
+            <div>
+              <h4>The whole villa <span className="flag" style={{background:'#E7F0E8',color:'#2C5238'}}>RECOMMENDED</span></h4>
+              <p className="muted" style={{margin:0,fontSize:'.9rem'}}>All 8 bedrooms · base 16 guests · private pool, lawn, bonfire pit &amp; games. Your group only.</p>
+            </div>
+            <div className="price"><b>{nightCount?INR(roomBase/Math.max(1,nightCount)):'₹45k+'}</b><span>avg / night</span></div>
+          </div>
+          <div className={"opt "+(mode==='rooms'?'sel':'')} onClick={()=>setMode('rooms')}>
+            <div className="radio-dot"></div>
+            <Ph tag="Photo" label="Bedrooms" />
+            <div>
+              <h4>Per-bedroom block <span className="flag">CONFIRM — off by default</span></h4>
+              <p className="muted" style={{margin:0,fontSize:'.9rem'}}>Partial let of a few bedrooms on quiet dates. Brief leans toward whole-villa only (no sharing with strangers).</p>
+            </div>
+            <div className="price"><b>₹7,000</b><span>/ bedroom / night</span></div>
+          </div>
+        </div>
+
+        {/* STEP 3 — add-ons */}
+        <div className="step">
+          <div className="step-title"><span className="step-num">3</span><h3>Add experiences</h3></div>
+
+          <div className="addon">
+            <div className="ic"><Icon d={ICONS.dine} /></div>
+            <div className="info"><h4>Breakfast <span className="gst-tag">INCLUDED</span></h4><span>Complimentary al fresco breakfast, every morning.</span></div>
+            <div className="toggle on" aria-label="Breakfast included" style={{opacity:.6,cursor:'not-allowed'}}></div>
+          </div>
+
+          <div className="addon">
+            <div className="ic"><Icon d={ICONS.fire} /></div>
+            <div className="info"><h4>Bonfire evening <span className="gst-tag">+18% GST</span></h4><span>{INR(P.bonfire)} per person · under open skies</span></div>
+            <div className="stepper">
+              <button type="button" onClick={()=>bump('bonfire',-1)}>−</button><span>{addons.bonfire}</span><button type="button" onClick={()=>bump('bonfire',1)}>+</button>
+            </div>
+          </div>
+
+          <div className="addon">
+            <div className="ic"><Icon d={ICONS.spa} /></div>
+            <div className="info"><h4>In-villa spa &amp; massage <span className="gst-tag">+18% GST</span></h4><span>{INR(P.spa)} per session <span className="flag">CONFIRM</span></span></div>
+            <div className="stepper">
+              <button type="button" onClick={()=>bump('spa',-1)}>−</button><span>{addons.spa}</span><button type="button" onClick={()=>bump('spa',1)}>+</button>
+            </div>
+          </div>
+
+          <div className="addon">
+            <div className="ic"><Icon d={ICONS.dine} /></div>
+            <div className="info"><h4>Meal package (lunch/dinner) <span className="gst-tag">+18% GST</span></h4><span>{INR(P.meal)} per person / meal <span className="flag">CONFIRM chef</span></span></div>
+            <div className="stepper">
+              <button type="button" onClick={()=>bump('meals',-1)}>−</button><span>{addons.meals}</span><button type="button" onClick={()=>bump('meals',1)}>+</button>
+            </div>
+          </div>
+
+          <div className="addon">
+            <div className="ic"><Icon d={ICONS.car} /></div>
+            <div className="info"><h4>Airport transfer <span className="gst-tag">+18% GST</span></h4><span>Coimbatore (CJB) ↔ villa · ~35 km</span></div>
+            <div className="seg">
+              <button type="button" className={addons.transfer==='none'?'on':''} onClick={()=>setAdd('transfer','none')}>None</button>
+              <button type="button" className={addons.transfer==='oneway'?'on':''} onClick={()=>setAdd('transfer','oneway')}>One-way</button>
+              <button type="button" className={addons.transfer==='round'?'on':''} onClick={()=>setAdd('transfer','round')}>Round</button>
+            </div>
+          </div>
+        </div>
+
+        {/* STEP 4 — policies */}
+        <div className="step">
+          <div className="step-title"><span className="step-num">4</span><h3>Good to know</h3></div>
+          <div className="policy-row">
+            <div className="pc"><b>Check-in / out</b><span>2:00 PM / 11:00 AM</span></div>
+            <div className="pc"><b>Cancellation</b><span>Full refund 14+ days out <span className="flag">SIGN-OFF</span></span></div>
+            <div className="pc"><b>Security deposit</b><span>{INR(DEPOSIT)} refundable <span className="flag">CONFIRM</span></span></div>
+            <div className="pc"><b>ID</b><span>Govt photo ID · all adults</span></div>
+            <div className="pc"><b>Pets / smoking / children</b><span className="flag">DEFINE</span></div>
+          </div>
+        </div>
+      </div>
+
+      {/* RIGHT: sticky summary */}
+      <aside className="summary">
+        <Ph className="sum-ph" tag="Photo" label="Cosmic Park" style={{borderRadius:0,borderLeft:'none',borderRight:'none',borderTop:'none'}} />
+        <div className="sum-body">
+          <h3>Your stay</h3>
+          <p className="muted" style={{fontSize:'.86rem',margin:'0 0 12px'}}>
+            {hasDates ? `${new Date(checkIn+'T00:00').toLocaleDateString('en-IN',{day:'numeric',month:'short'})} → ${new Date(checkOut+'T00:00').toLocaleDateString('en-IN',{day:'numeric',month:'short'})} · ${nightCount} night${nightCount>1?'s':''} · ${guests} guests`
+                      : 'Pick your dates to see a live price breakdown.'}
+          </p>
+
+          {!hasDates && <div className="empty-sum"><Icon d={ICONS.leaf} style={{width:30,height:30,margin:'0 auto 8px',display:'block'}}/>Select valid check-in and check-out dates {belowMin?'(meet the minimum stay)':''} to see your GST-inclusive quote.</div>}
+
+          {hasDates && <>
+            <div className="line"><span className="muted">{mode==='villa'?'Whole villa':'Bedroom block'} · {nightCount} night{nightCount>1?'s':''}</span><span>{INR(roomBase)}</span></div>
+            {extraGuestFee>0 && <div className="line"><span className="muted">Extra guests ({extraGuests} × {nightCount}n)</span><span>{INR(extraGuestFee)}</span></div>}
+            <div className="line"><span className="muted">GST on room rent · 18% <span className="flag">SLAB?</span></span><span>{INR(roomGST)}</span></div>
+            <div className="line sub"><span>Stay total</span><span>{INR(stayTotal)}</span></div>
+
+            {addonSubtotal>0 && <>
+              {addons.bonfire>0 && <div className="line"><span className="muted">Bonfire × {addons.bonfire}</span><span>{INR(addons.bonfire*P.bonfire)}</span></div>}
+              {addons.spa>0 && <div className="line"><span className="muted">Spa × {addons.spa}</span><span>{INR(addons.spa*P.spa)}</span></div>}
+              {addons.meals>0 && <div className="line"><span className="muted">Meals × {addons.meals}</span><span>{INR(addons.meals*P.meal)}</span></div>}
+              {transferCost>0 && <div className="line"><span className="muted">Airport transfer ({addons.transfer==='round'?'round':'one-way'})</span><span>{INR(transferCost)}</span></div>}
+              <div className="line"><span className="muted">GST on add-ons · 18%</span><span>{INR(addonGST)}</span></div>
+              <div className="line sub"><span>Add-ons total</span><span>{INR(addonTotal)}</span></div>
+            </>}
+
+            <div className="line"><span className="muted">Security deposit (refundable · no GST)</span><span>{INR(DEPOSIT)}</span></div>
+            <div className="line total"><span>Grand total</span><b>{INR(grandTotal)}</b></div>
+            <div className="deposit-note">Deposit is refunded within 7 days of check-out, less any damages. <span className="flag">CONFIRM</span></div>
+
+            <div className="pay-now">
+              <small>PAYABLE NOW · 30% advance + deposit <span className="flag" style={{background:'rgba(255,255,255,.15)',color:'#E9C9A8'}}>CONFIRM %</span></small>
+              <span className="amt">{INR(payNow)}</span>
+              <small>Balance {INR(taxedTotal*0.70)} due at check-in</small>
+            </div>
+          </>}
+
+          <button className="btn btn-primary" style={{width:'100%',marginTop:'16px',justifyContent:'center'}} disabled={!hasDates}
+            onClick={()=>alert('Wireframe — this is where the payment / enquiry step would begin.')}>
+            {hasDates?'Request to book':'Select dates first'}
+          </button>
+          <p className="muted" style={{fontSize:'.76rem',textAlign:'center',margin:'10px 0 0'}}>You won't be charged yet · GST invoice needs villa GSTIN <span className="flag">CONFIRM</span></p>
+        </div>
+      </aside>
+    </div>
+
+    <Footer go={go} />
+  </>;
+}
+
+/* ================= FOOTER ================= */
+function Footer({go}){
+  return <footer>
+    <div className="wrap">
+      <div className="foot-grid">
+        <div>
+          <div className="brand" style={{marginBottom:'12px'}}>
+            <div className="mark"></div>
+            <div><b style={{color:'#fff'}}>Cosmic Park</b><small style={{color:'rgba(244,238,225,.6)'}}>Anaikatti · Coimbatore</small></div>
+          </div>
+          <p style={{maxWidth:'34ch',color:'rgba(244,238,225,.7)'}}>A private 8-bedroom hillside villa for families and friends who want a home with the amenities of a resort.</p>
+        </div>
+        <div><h5>Explore</h5><ul><li><a onClick={()=>go('home')}>The Villa</a></li><li><a onClick={()=>go('home')}>Experiences</a></li><li><a onClick={()=>go('home')}>Gallery</a></li><li><a onClick={()=>go('home')}>Location</a></li></ul></div>
+        <div><h5>Book</h5><ul><li><a onClick={()=>go('booking')}>Rates &amp; availability</a></li><li><a onClick={()=>go('booking')}>Book your stay</a></li><li><a onClick={()=>go('booking')}>Add-ons</a></li><li><a onClick={()=>go('booking')}>Policies</a></li></ul></div>
+        <div><h5>Contact</h5><ul><li><a>Enquire for a group</a></li><li><a>WhatsApp</a></li><li><a>+91 · CONFIRM</a></li><li><a>Anaikatti, Coimbatore</a></li></ul></div>
+      </div>
+      <div className="foot-bottom">
+        <span>© 2026 Cosmic Park · Prepared by Phoenixx IT</span>
+        <span>Privacy · Terms · Cancellation Policy</span>
+      </div>
+    </div>
+  </footer>;
+}
+
+/* ================= APP ================= */
+function App(){
+  const [view,setView]=useState(window.location.hash==='#booking'?'booking':'home');
+  const go=(v)=>{ setView(v); window.location.hash=v; window.scrollTo({top:0,behavior:'auto'}); };
+  useEffect(()=>{ const h=()=>setView(window.location.hash==='#booking'?'booking':'home'); window.addEventListener('hashchange',h); return ()=>window.removeEventListener('hashchange',h); },[]);
+  return <><Nav go={go} view={view} />{view==='booking'?<Booking go={go}/>:<Home go={go}/>}</>;
+}
+ReactDOM.createRoot(document.getElementById('root')).render(<App/>);
+</script>
+</body>
+</html>
