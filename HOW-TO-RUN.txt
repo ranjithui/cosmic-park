@@ -17,6 +17,8 @@ Also needed: a running PostgreSQL database.
 To put the site online for a demo instead of running it
 locally, skip to "RUN IT LIVE" at the bottom.
 
+For the admin dashboard login, see "ADMIN LOGIN" at the bottom.
+
 
 ------------------------------------------------------------
  STEP 1 — START THE BOOKING API  (port 4000)
@@ -167,11 +169,49 @@ Short version:
   Use "New -> Blueprint", NOT "New -> Web Service". The Web
   Service form ignores render.yaml and configures nothing.
 
-Before showing the demo: open the API health URL first
-(https://<your-api>.onrender.com/api/health) and wait for it to
-respond. On Render's free plan the API sleeps after 15 minutes
-idle and takes 30-60 seconds to wake, and the website will look
-frozen while it does.
+The live demo (deployed 10-08-2026):
+
+  Website  ->  https://cosmic-park-web.onrender.com
+  API      ->  https://cosmic-park-api.onrender.com
+  Admin    ->  https://cosmic-park-api.onrender.com/admin
+  Health   ->  https://cosmic-park-api.onrender.com/api/health
+
+Before showing the demo: open the Health URL first and wait for
+it to respond. On Render's free plan the API sleeps after 15
+minutes idle and takes 30-60 seconds to wake, and the website
+will look frozen while it does.
+
+
+------------------------------------------------------------
+ ADMIN LOGIN
+------------------------------------------------------------
+
+Username (both local and live):
+
+    admin@cosmicpark.in
+
+Password:
+
+  LOCAL    ChangeMe123!
+           This is what "npm run seed" creates. To use a
+           different one, set ADMIN_PASSWORD in apps\api\.env
+           and re-run "npm run seed".
+
+  LIVE     Whatever ADMIN_PASSWORD is set to in Render.
+           It is NOT written down in this repo on purpose —
+           look it up at:
+             Render Dashboard -> cosmic-park-api -> Environment
+
+           To change it, edit ADMIN_PASSWORD there and Save.
+           Render redeploys and the seed applies the new
+           password (~4-6 minutes).
+
+           Change it in the Render dashboard, NOT in the admin
+           UI. While ADMIN_PASSWORD is set, every deploy resets
+           the password back to that value.
+
+The admin dashboard is PUBLIC — anyone with the URL can reach the
+login page. Do not leave it on the seeded default password.
 
 
 ------------------------------------------------------------
