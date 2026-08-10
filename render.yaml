@@ -31,7 +31,9 @@ services:
     rootDir: apps/api
     # migrate deploy (not `migrate dev`) — applies committed migrations,
     # never prompts, never generates new ones. Safe to re-run per deploy.
-    buildCommand: npm ci && npx prisma generate && npx prisma migrate deploy
+    # The seed is idempotent (upserts + match-on-name for rate plans), so
+    # it runs every build and the demo data is never missing.
+    buildCommand: npm ci && npx prisma generate && npx prisma migrate deploy && npm run seed
     startCommand: npm start
     healthCheckPath: /api/health
     envVars:
@@ -71,11 +73,16 @@ services:
     envVars:
       - key: NODE_VERSION
         value: "20"
-      # Vite inlines this at BUILD time, not runtime. If Render assigns the
-      # API a different hostname (name collision → suffix), fix it here and
-      # redeploy this service — restarting alone will not pick it up.
+      # Resolved by Render to the API's real hostname, whatever suffix it
+      # ends up with — no hardcoded URL to fix after the first deploy.
+      # `host` has no scheme; src/lib/api.js upgrades a bare host to https://.
+      # Vite inlines this at BUILD time, so if the API is ever renamed this
+      # service must be rebuilt, not just restarted.
       - key: VITE_API_BASE_URL
-        value: https://cosmic-park-api.onrender.com
+        fromService:
+          type: web
+          name: cosmic-park-api
+          property: host
     routes:
       # React Router uses browser history — every deep link (/rooms, /booking)
       # must fall through to index.html or the CDN returns 404.

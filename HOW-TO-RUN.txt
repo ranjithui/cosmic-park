@@ -55,9 +55,9 @@ database and a connection string.
   Seeded admin login (change it):  admin@cosmicpark.in / ChangeMe123!
   Admin dashboard:  http://localhost:4000/admin
 
-  RUN THE SEED ONCE. It is not fully repeatable — re-running it
-  adds three more copies of the seasonal rate plans each time.
-  (The other seeded records are upserts and are safe.)
+  The seed is safe to re-run. It matches existing records by
+  email / slug / name and updates them in place, and it never
+  deletes anything, so test bookings you have made survive it.
 
   NOTE: The "DB_PROVIDER=sqlite" shortcut in the API README does
   NOT work as written (Prisma rejects env() in the provider, and
@@ -95,7 +95,7 @@ have to cd into each folder:
   cd "C:\Users\USER\ui ux\cosmic-park"
 
   npm run install:all    -> installs BOTH apps (first time only)
-  npm run seed           -> seeds the database (once — see warning above)
+  npm run seed           -> seeds the database (safe to re-run)
 
   npm run dev:api        -> terminal 1: starts the API
   npm run dev:web        -> terminal 2: starts the website
@@ -155,7 +155,13 @@ not on a serverless host.
 Short version:
   1. Push the repo to GitHub.
   2. Render Dashboard -> New -> Blueprint -> pick this repo -> Apply.
-  3. Seed the database once from your machine (see DEPLOY.md).
+
+  That's the whole setup. The blueprint creates the database,
+  applies migrations, seeds the demo data, generates the JWT
+  secret, and points the website at the API on its own.
+
+  Use "New -> Blueprint", NOT "New -> Web Service". The Web
+  Service form ignores render.yaml and configures nothing.
 
 Before showing the demo: open the API health URL first
 (https://<your-api>.onrender.com/api/health) and wait for it to
@@ -189,7 +195,7 @@ frozen while it does.
       DATABASE_URL in apps\api\.env is wrong, or PostgreSQL isn't
       running. Confirm you can connect with that string first.
 
-  - Duplicate rate plans in the admin dashboard:
-      The seed was run more than once. Delete the extras in the
-      admin rate table.
+  - Seeded prices look wrong after the new year:
+      Rate plans are seeded for the CURRENT year. Re-run
+      "npm run seed" and it will shift the dates forward.
 ============================================================

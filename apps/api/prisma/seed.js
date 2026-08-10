@@ -63,37 +63,47 @@ async function main() {
   }
 
   // --- Seasonal rate plans ---
+  // RatePlan has no unique constraint (only @@index), so createMany's
+  // skipDuplicates can't fire and re-running would stack duplicate plans.
+  // Match on (roomTypeId, name) by hand to keep the seed re-runnable —
+  // the deploy pipeline runs it on every build.
   const year = new Date().getFullYear();
-  await prisma.ratePlan.createMany({
-    data: [
-      {
-        roomTypeId: villa.id,
-        name: 'Off-Peak',
-        startDate: new Date(`${year}-01-10`),
-        endDate: new Date(`${year}-03-01`),
-        nightlyRate: 38000,
-        priority: 1,
-      },
-      {
-        roomTypeId: villa.id,
-        name: 'Peak Season',
-        startDate: new Date(`${year}-04-01`),
-        endDate: new Date(`${year}-06-15`),
-        nightlyRate: 52000,
-        priority: 2,
-      },
-      {
-        roomTypeId: villa.id,
-        name: 'Festive / New Year',
-        startDate: new Date(`${year}-12-20`),
-        endDate: new Date(`${year + 1}-01-05`),
-        nightlyRate: 68000,
-        minStay: 2,
-        priority: 3,
-      },
-    ],
-    skipDuplicates: true,
-  });
+  const ratePlans = [
+    {
+      name: 'Off-Peak',
+      startDate: new Date(`${year}-01-10`),
+      endDate: new Date(`${year}-03-01`),
+      nightlyRate: 38000,
+      priority: 1,
+    },
+    {
+      name: 'Peak Season',
+      startDate: new Date(`${year}-04-01`),
+      endDate: new Date(`${year}-06-15`),
+      nightlyRate: 52000,
+      priority: 2,
+    },
+    {
+      name: 'Festive / New Year',
+      startDate: new Date(`${year}-12-20`),
+      endDate: new Date(`${year + 1}-01-05`),
+      nightlyRate: 68000,
+      minStay: 2,
+      priority: 3,
+    },
+  ];
+  for (const plan of ratePlans) {
+    const existing = await prisma.ratePlan.findFirst({
+      where: { roomTypeId: villa.id, name: plan.name },
+      select: { id: true },
+    });
+    if (existing) {
+      // Refresh the dates so a demo seeded last year still quotes correctly.
+      await prisma.ratePlan.update({ where: { id: existing.id }, data: plan });
+    } else {
+      await prisma.ratePlan.create({ data: { roomTypeId: villa.id, ...plan } });
+    }
+  }
 
   // --- Add-on catalog ---
   await prisma.addOnCatalog.upsert({

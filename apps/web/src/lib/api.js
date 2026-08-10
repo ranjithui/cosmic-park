@@ -3,7 +3,16 @@
 // In dev, VITE_API_BASE_URL is blank and vite proxies /api → :4000, so we
 // use same-origin relative URLs. In prod, set VITE_API_BASE_URL to the API
 // origin (e.g. https://api.cosmicpark.in).
-const BASE = (import.meta.env.VITE_API_BASE_URL || '').replace(/\/$/, '');
+//
+// A bare hostname is accepted and upgraded to https://. Render's blueprint
+// wires this from the API service's `host` property, which has no scheme.
+function normalizeBase(raw) {
+  const value = (raw || '').trim().replace(/\/$/, '');
+  if (!value) return '';
+  return /^https?:\/\//i.test(value) ? value : `https://${value}`;
+}
+
+const BASE = normalizeBase(import.meta.env.VITE_API_BASE_URL);
 
 export class ApiError extends Error {
   constructor(status, message, details) {

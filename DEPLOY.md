@@ -1,51 +1,36 @@
 # Deploying Cosmic Park to Render
 
-The blueprint in [render.yaml](render.yaml) provisions all three resources. Read the **Seed the database** step before your demo — it does not happen automatically.
+The blueprint in [render.yaml](render.yaml) provisions and configures all three resources. There is nothing to fill in by hand.
 
 ---
 
-## 1. Push the blueprint
-
-```bash
-git add render.yaml DEPLOY.md
-git commit -m "Add Render blueprint"
-git push origin main
-```
-
-## 2. Create the Blueprint
+## Deploy
 
 Render Dashboard → **New** → **Blueprint** → select `ranjithui/cosmic-park` → **Apply**.
 
-Render reads `render.yaml`, creates the database first, then builds both services. First build takes ~4–6 minutes. `prisma migrate deploy` applies `20260808084530_init` automatically.
+Do *not* use **New → Web Service** — that form ignores `render.yaml` and would create a single unconfigured service.
 
-## 3. Confirm the API hostname
+Render reads the blueprint, creates the database first, then builds both services. First build takes ~4–6 minutes. Along the way it automatically:
 
-Render appends a random suffix if `cosmic-park-api` is already taken globally. Check the API service's URL in the dashboard:
+- generates `JWT_SECRET` and injects `DATABASE_URL` from the database
+- applies the `20260808084530_init` migration (`prisma migrate deploy`)
+- seeds the demo data — villa, amenities, seasonal rate plans, add-ons, admin user
+- resolves the web app's `VITE_API_BASE_URL` to the API's real hostname, whatever suffix Render assigns it
 
-- If it is `https://cosmic-park-api.onrender.com` — nothing to do.
-- If it differs — update `VITE_API_BASE_URL` in `render.yaml`, push, and **redeploy the static site**. Vite inlines env vars at build time, so a restart alone won't pick up the change.
+## Verify
 
-Verify: `https://<api-host>/api/health` should return `{"status":"ok",...}`.
+1. `https://<api-host>/api/health` → `{"status":"ok",...}`
+2. Open the static site and run a booking for **2026-12-26 → 2026-12-29**. Festive-tier pricing means the rate plans seeded correctly.
 
-## 4. Seed the database
+## Change the admin password
 
-Free instances have no shell access, so run the seed from your machine against the **External** connection string (Dashboard → cosmic-park-db → Connections → External Database URL):
+Seeded login: `admin@cosmicpark.in` / `ChangeMe123!` — **change it before sharing the demo URL.** The admin dashboard is public at `https://<api-host>/admin`.
 
-```bash
-cd apps/api
-DATABASE_URL="<external-connection-string>" npm run seed
-```
+## Re-seeding
 
-PowerShell:
+The seed is idempotent and runs on every deploy, so demo data can't go missing. Records are matched by natural key — email, slug, name — and updated in place rather than duplicated. It never deletes anything, so real bookings made during a demo survive a redeploy.
 
-```powershell
-cd apps\api
-$env:DATABASE_URL="<external-connection-string>"; npm run seed
-```
-
-> **Run this exactly once.** The seed is *not* idempotent. Most of it upserts, but the seasonal rate plans use `createMany({ skipDuplicates: true })` at [seed.js:67](apps/api/prisma/seed.js#L67) and `RatePlan` has only an `@@index`, no unique constraint ([schema.prisma:117](apps/api/prisma/schema.prisma#L117)) — so `skipDuplicates` never fires and every re-run adds three more overlapping rate plans. Since pricing resolves overlaps by `priority`, duplicates won't visibly break quotes, but your admin rate table will fill with copies. This is also why the seed is deliberately kept out of `buildCommand`, which re-runs on every deploy.
-
-Seeded admin login: `admin@cosmicpark.in` / `ChangeMe123!` — **change it before sharing the demo URL.** The admin dashboard is public at `https://<api-host>/admin`.
+To wipe and start clean, drop the database in the Render dashboard and re-apply the blueprint.
 
 ---
 
@@ -56,7 +41,7 @@ Seeded admin login: `admin@cosmicpark.in` / `ChangeMe123!` — **change it befor
 | Web service sleeps after 15 min idle | First request takes 30–60s. The static site loads instantly, then the booking flow hangs — which reads as "the site is broken." | Hit `/api/health` ~2 min before demoing, or upgrade the API to Starter ($7/mo). |
 | No persistent disk | Everything uploaded through the admin media panel is wiped on redeploy/restart. | For the demo, don't rely on uploaded photos. Commit images to `apps/web/public/` and reference them directly, or move media to Cloudinary/S3. |
 | Free Postgres expires after 30 days | Database is deleted, not just suspended. | Fine for a short demo. For anything longer, upgrade the database before day 30. |
-| No shell on free instances | Can't run one-off commands server-side. | Use the external connection string from your machine, as in step 4. |
+| No shell on free instances | Can't run one-off commands server-side. | Nothing needed — migrations and seeding run in the build. For ad-hoc queries, use the external connection string from your machine. |
 
 ## Upgrading for a live demo
 
