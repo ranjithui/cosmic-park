@@ -73,16 +73,16 @@ services:
     envVars:
       - key: NODE_VERSION
         value: "20"
-      # Resolved by Render to the API's real hostname, whatever suffix it
-      # ends up with — no hardcoded URL to fix after the first deploy.
-      # `host` has no scheme; src/lib/api.js upgrades a bare host to https://.
-      # Vite inlines this at BUILD time, so if the API is ever renamed this
-      # service must be rebuilt, not just restarted.
+      # Must be the PUBLIC origin, spelled out. Do not switch this to
+      # `fromService: property: host` — that resolves to the internal
+      # private-network name ("cosmic-park-api", no domain), which the
+      # browser cannot reach. Private networking is server-to-server;
+      # this value ships to the client.
+      #
+      # Vite inlines it at BUILD time, so if the API is ever renamed,
+      # rebuild this service — restarting will not pick up the change.
       - key: VITE_API_BASE_URL
-        fromService:
-          type: web
-          name: cosmic-park-api
-          property: host
+        value: https://cosmic-park-api.onrender.com
     routes:
       # React Router uses browser history — every deep link (/rooms, /booking)
       # must fall through to index.html or the CDN returns 404.
