@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import Icon from '../components/Icon.jsx';
-import { Media, Ph } from '../components/Placeholder.jsx';
+import { Media } from '../components/Placeholder.jsx';
 import Footer from '../components/Footer.jsx';
 import { today } from '../lib/format.js';
 
@@ -9,14 +9,12 @@ import { today } from '../lib/format.js';
 // the grid (see `.cosmic-bento` in global.css) via its number, so the visual
 // order — 04/05 left, 02 tall centre, 01 wide top-right, 03 + 06 beneath — is
 // held by CSS while the array stays in reading order.
-// `src: null` means no photograph of that subject exists yet — those fall back
-// to the labelled placeholder rather than borrowing an unrelated frame.
 const FEATURES = [
   { n: '01', h: 'Private pool with a view', p: 'A swimming pool that looks out over mountain, garden and forest — yours alone for the stay.', src: '/gallery/outdoor-pool.jpg' },
   { n: '02', h: 'Expansive lawn', p: 'Open lawn for outdoor relaxation and family gatherings, from morning chai to evening games.', src: '/gallery/outdoor-sitting.jpg' },
   { n: '03', h: 'Al fresco dining', p: 'Meals in the open air, with a complimentary breakfast overlooking the hills each morning.', src: '/gallery/balcony-view.jpg' },
-  { n: '04', h: 'Bonfire evenings', p: 'Gather under open skies as the light fades — crackling fire, cool mountain air, and stars.', src: null },
-  { n: '05', h: 'Room to play', p: 'Badminton, football and carrom keep every generation of the group busy through the day.', src: null },
+  { n: '04', h: 'Bonfire evenings', p: 'Gather under open skies as the light fades — crackling fire, cool mountain air, and stars.', src: '/gallery/bonfire.jpg' },
+  { n: '05', h: 'Room to play', p: 'Badminton, football and carrom keep every generation of the group busy through the day.', src: '/gallery/room-to-play.jpg' },
   { n: '06', h: 'Spaces that bring people together', p: 'A bathtub to soak in, thoughtful corners to talk in, and an unhurried pace throughout.', src: '/gallery/bathtub.jpg' },
 ];
 
@@ -186,16 +184,17 @@ export default function Home() {
         <div className="cosmic-aurora" aria-hidden="true" />
 
         <div className="wrap cosmic-inner">
+          {/* Flat, not nested: the three parts sit in the same grid so the
+              standfirst can start on the headline's first line rather than up
+              beside the kicker, and end flush with the bento's right edge. */}
           <div className="cosmic-head">
-            <div>
-              <p className="eyebrow">What makes it Cosmic Park</p>
-              <h2>
-                An <em>experience</em>, not just
-                <br />
-                a place to sleep
-              </h2>
-            </div>
-            <p>
+            <p className="eyebrow">What makes it Cosmic Park</p>
+            <h2>
+              An <em>experience</em>, not just
+              <br />
+              a place to sleep
+            </h2>
+            <p className="cosmic-lede">
               Cosmic Park is more than a stay — it's a private retreat where every space is designed
               to help you slow down and reconnect.
             </p>
@@ -216,11 +215,7 @@ export default function Home() {
                 aria-describedby={`feature-note-${f.n}`}
                 onClick={() => navigate('/gallery')}
               >
-                {f.src ? (
-                  <img src={f.src} alt="" loading="lazy" decoding="async" />
-                ) : (
-                  <Ph tag="Photo" label={f.h} />
-                )}
+                <img src={f.src} alt="" loading="lazy" decoding="async" />
                 <span className="cosmic-cap">
                   <span className="cosmic-cap-top">
                     <i className="cosmic-chip">{f.n}</i>
