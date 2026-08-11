@@ -5,11 +5,12 @@ import Icon from './Icon.jsx';
 // Split either side of the centre emblem. Left carries the "what it is" pages,
 // right carries the "what it costs / where it is" pages so the Book button
 // finishes that side.
-// 2 / 3 rather than 3 / 2: without the Book button on the right, that split is
-// what keeps the two halves close to the same width either side of the emblem.
+// Local Guide joins the left: it is another "what it is" page, and it evens
+// the halves at 3 / 3 either side of the emblem.
 const LEFT_LINKS = [
   { label: 'The Villa', to: '/#villa' },
   { label: 'Experiences', to: '/#experiences' },
+  { label: 'Local Guide', to: '/local-guide' },
 ];
 const RIGHT_LINKS = [
   { label: 'Gallery', to: '/gallery' },

@@ -5,6 +5,7 @@ const QUICK = [
   { label: 'The Villa', to: '/#villa' },
   { label: 'Experiences', to: '/#experiences' },
   { label: 'Gallery', to: '/gallery' },
+  { label: 'Local Guide', to: '/local-guide' },
   { label: 'Location', to: '/#location' },
 ];
 const INFO = [

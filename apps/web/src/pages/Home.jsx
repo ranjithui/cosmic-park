@@ -359,8 +359,11 @@ export default function Home() {
                   <br />
                   scenic drives await
                 </h3>
-                <p>From hidden trails to local flavours, we'll help you discover the best of the region.</p>
-                <button className="btn btn-ghost btn-lg" onClick={() => navigate('/story')}>
+                <p>
+                  Eight places within reach of the gate — hill viewpoints, a river, a rainforest park and a stepped
+                  hill temple — each with the drive measured by road from here.
+                </p>
+                <button className="btn btn-ghost btn-lg" onClick={() => navigate('/local-guide')}>
                   Local Guide <Icon name="arrow" />
                 </button>
               </div>

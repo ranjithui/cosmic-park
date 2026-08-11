@@ -9,6 +9,7 @@ import Gallery from './pages/Gallery.jsx';
 import Policies from './pages/Policies.jsx';
 import FAQ from './pages/FAQ.jsx';
 import Story from './pages/Story.jsx';
+import LocalGuide from './pages/LocalGuide.jsx';
 import ManageBooking from './pages/ManageBooking.jsx';
 
 // Scroll to the top on navigation, or to an anchor when a hash is present.
@@ -55,6 +56,7 @@ export default function App() {
           <Route path="/policies" element={<Policies />} />
           <Route path="/faq" element={<FAQ />} />
           <Route path="/story" element={<Story />} />
+          <Route path="/local-guide" element={<LocalGuide />} />
           <Route path="/manage" element={<ManageBooking />} />
           <Route path="*" element={<NotFound />} />
         </Routes>
