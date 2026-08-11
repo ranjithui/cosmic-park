@@ -734,32 +734,157 @@ section {
   margin: 0;
 }
 
-/* ---------- feature bento ---------- */
-.bento {
-  display: grid;
-  grid-template-columns: 0.4fr 0.6fr;
-  gap: 14px;
-  align-items: stretch;
-}
-.bento-lead {
+/* ============================================================
+   Dark cosmic bento — "What makes it Cosmic Park"
+   The one section that inverts the palette: a midnight ground
+   with a tiled starfield, ember auroras washing the top corners,
+   and six image-first cards in warm glowing glass frames.
+   ============================================================ */
+.cosmic {
   position: relative;
-  border-radius: var(--r);
+  isolation: isolate; /* keeps the auroras' blur off the sections either side */
   overflow: hidden;
+  padding: 96px 0 104px;
+  background: radial-gradient(120% 90% at 50% 0%, #0d1520 0%, #080c12 55%, #06090e 100%);
+  color: #f4f1ea;
+}
+/* Four dot layers on mismatched tile sizes read as a scattered sky; a single
+   repeating layer would show its grid immediately. */
+.cosmic-stars {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  z-index: -1;
+  opacity: 0.9;
+  background-image:
+    radial-gradient(1.6px 1.6px at 40px 60px, rgba(255, 255, 255, 0.8), transparent 100%),
+    radial-gradient(1.2px 1.2px at 180px 130px, rgba(255, 255, 255, 0.5), transparent 100%),
+    radial-gradient(1px 1px at 90px 210px, rgba(255, 232, 205, 0.6), transparent 100%),
+    radial-gradient(1.4px 1.4px at 265px 35px, rgba(255, 255, 255, 0.42), transparent 100%);
+  background-size: 320px 260px, 430px 330px, 260px 300px, 540px 410px;
+}
+.cosmic-aurora {
+  position: absolute;
+  left: -6%;
+  right: -6%;
+  top: -14%;
+  height: 62%;
+  pointer-events: none;
+  z-index: -1;
+  filter: blur(26px);
+  background:
+    radial-gradient(58% 76% at 6% 4%, rgba(255, 138, 58, 0.3), transparent 62%),
+    radial-gradient(54% 74% at 94% 6%, rgba(255, 152, 72, 0.26), transparent 62%),
+    radial-gradient(40% 60% at 18% 22%, rgba(126, 186, 148, 0.14), transparent 66%),
+    radial-gradient(40% 60% at 82% 24%, rgba(126, 186, 148, 0.12), transparent 66%),
+    radial-gradient(80% 60% at 50% -24%, rgba(58, 110, 148, 0.18), transparent 70%);
+}
+.cosmic-inner {
+  position: relative;
+}
+
+/* Headline left, standfirst right and top-aligned to the serif's x-height. */
+.cosmic-head {
+  display: grid;
+  grid-template-columns: 1.2fr 0.8fr;
+  gap: 48px;
+  align-items: start;
+  margin-bottom: 46px;
+}
+.cosmic .eyebrow {
+  color: #f0a961;
+  letter-spacing: 0.24em;
+  margin-bottom: 0.9rem;
+}
+.cosmic-head h2 {
+  color: #f6f3ec;
+  font-size: clamp(2rem, 4.2vw, 3.3rem);
+  font-weight: 400;
+  line-height: 1.1;
+}
+/* Not italic — the <em> is here to carry the gradient, and the glow has to be a
+   drop-shadow because text-shadow paints under a background-clipped fill. */
+.cosmic-head h2 em {
+  font-style: normal;
+  background: linear-gradient(96deg, #ff9a38, #ffc389 58%, #ffdcbb);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  filter: drop-shadow(0 0 18px rgba(255, 150, 60, 0.35));
+}
+.cosmic-head > p {
+  margin: 0;
+  padding-top: 0.5rem;
+  max-width: 42ch;
+  justify-self: end;
+  color: rgba(240, 237, 230, 0.74);
+  font-size: 0.95rem;
+}
+
+/* 04/05 stacked, 02 tall through both rows, 01 wide across the top right,
+   03 + 06 filling in beneath it. */
+.cosmic-bento {
+  display: grid;
+  grid-template-columns: 0.95fr 0.82fr 1.05fr 1.05fr;
+  grid-template-rows: 1.05fr 1fr;
+  grid-template-areas:
+    'c04 c02 c01 c01'
+    'c05 c02 c03 c06';
+  gap: 18px;
   min-height: 520px;
 }
-.bento-lead .ph {
+.cosmic-card[data-slot='01'] {
+  grid-area: c01;
+}
+.cosmic-card[data-slot='02'] {
+  grid-area: c02;
+}
+.cosmic-card[data-slot='03'] {
+  grid-area: c03;
+}
+.cosmic-card[data-slot='04'] {
+  grid-area: c04;
+}
+.cosmic-card[data-slot='05'] {
+  grid-area: c05;
+}
+.cosmic-card[data-slot='06'] {
+  grid-area: c06;
+}
+
+.cosmic-card {
+  position: relative;
+  display: block;
+  min-height: 190px;
+  padding: 0;
+  text-align: left;
+  border: 1px solid rgba(255, 186, 120, 0.34);
+  border-radius: 22px;
+  background: #0b1016;
+  overflow: hidden;
+  box-shadow: 0 0 26px rgba(255, 146, 54, 0.16), 0 22px 55px rgba(0, 0, 0, 0.55);
+  transition: transform 0.35s ease, box-shadow 0.35s ease, border-color 0.35s ease;
+}
+/* The glass rim: a hairline highlight plus warm light bleeding in from the edge. */
+.cosmic-card::after {
+  content: '';
   position: absolute;
   inset: 0;
-  border-radius: 0;
-  border: none;
+  border-radius: inherit;
+  pointer-events: none;
+  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.07), inset 0 0 30px rgba(255, 150, 60, 0.12);
 }
-/* Every slide is stacked and mounted; only opacity changes, so a switch is a
-   cross-fade rather than a blank frame while the next file downloads. */
-.bento-slides {
-  position: absolute;
-  inset: 0;
+.cosmic-card:hover {
+  transform: translateY(-4px);
+  border-color: rgba(255, 205, 150, 0.62);
+  box-shadow: 0 0 42px rgba(255, 146, 54, 0.3), 0 26px 62px rgba(0, 0, 0, 0.6);
 }
-.bento-slide {
+.cosmic-card:focus-visible {
+  outline: 2px solid #ffbd7a;
+  outline-offset: 3px;
+}
+.cosmic-card > img,
+.cosmic-card > .ph {
   position: absolute;
   inset: 0;
   width: 100%;
@@ -767,181 +892,87 @@ section {
   object-fit: cover;
   border: none;
   border-radius: 0;
-  opacity: 0;
-  transition: opacity 0.5s ease;
+  transition: transform 0.6s ease;
 }
-.bento-slide.on {
-  opacity: 1;
+.cosmic-card:hover > img {
+  transform: scale(1.04);
 }
-.bento-nav {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 16px;
-  margin-top: 18px;
+/* No photograph of this feature exists yet. The default placeholder is a sand
+   swatch, which would punch a hole in the night ground — this is its dark twin. */
+.cosmic-card > .ph {
+  background: repeating-linear-gradient(45deg, rgba(255, 190, 120, 0.055) 0 14px, transparent 14px 28px),
+    #101822;
+  color: rgba(255, 222, 190, 0.82);
 }
-.dots {
-  display: flex;
-  gap: 7px;
+.cosmic-card > .ph .ph-tag {
+  background: rgba(255, 255, 255, 0.14);
+  color: #ffdcbb;
 }
-.dots button {
-  width: 22px;
-  height: 4px;
-  padding: 0;
-  border: none;
-  border-radius: 999px;
-  background: rgba(255, 255, 255, 0.4);
-  cursor: pointer;
-  transition: background 0.2s, width 0.2s;
-}
-.dots button:hover {
-  background: rgba(255, 255, 255, 0.7);
-}
-.dots button.on {
-  width: 30px;
-  background: var(--gold-lt);
-}
-/* The tile currently in the showcase. The gold rule reads at a glance without
-   the 1px hairline grid having to shift, which a border would force. */
-.tile {
-  position: relative;
-  transition: background 0.3s ease;
-}
-.tile.on {
-  background: var(--cream);
-}
-.tile.on::before {
-  content: '';
+.cosmic-cap {
   position: absolute;
   left: 0;
-  top: 0;
+  right: 0;
   bottom: 0;
-  width: 3px;
-  background: var(--clay);
+  display: block;
+  padding: 52px 16px 15px;
+  background: linear-gradient(180deg, rgba(6, 9, 14, 0) 0%, rgba(6, 9, 14, 0.7) 52%, rgba(6, 9, 14, 0.93) 100%);
 }
-.tile.on h3 {
-  color: var(--forest);
-}
-.tile.on .round-btn {
-  background: var(--clay);
-  border-color: var(--clay);
-}
-.tile.on .round-btn .ico {
-  stroke: #fff;
-}
-.bento-lead-body {
-  position: relative;
-  height: 100%;
-  display: flex;
-  flex-direction: column;
-  justify-content: flex-end;
-  padding: 30px 28px;
-  color: #fff;
-  background: linear-gradient(180deg, rgba(4, 10, 7, 0) 34%, rgba(4, 10, 7, 0.55) 62%, rgba(4, 10, 7, 0.88));
-}
-.bento-lead .n {
-  font-family: 'Fraunces', serif;
-  font-size: 1.7rem;
-  font-weight: 600;
-  color: var(--gold-lt);
-  line-height: 1;
-}
-.bento-lead h3 {
-  color: #fff;
-  font-size: 1.5rem;
-  font-weight: 400;
-  line-height: 1.2;
-  margin: 0.5rem 0 0.5rem;
-}
-.bento-lead p {
-  color: rgba(255, 255, 255, 0.8);
-  font-size: 0.9rem;
-  margin: 0;
-  max-width: 32ch;
-}
-/* 1px gaps over a --line ground draw the hairline rules between tiles. */
-.bento-grid {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  grid-auto-rows: 1fr;
-  gap: 1px;
-  background: var(--line);
-  border: 1px solid var(--line);
-  border-radius: var(--r);
-  overflow: hidden;
-}
-.tile {
-  background: var(--paper);
-  padding: 22px 20px 18px;
-  display: flex;
-  flex-direction: column;
-}
-.tile-top {
+.cosmic-cap-top {
   display: flex;
   align-items: center;
-  justify-content: space-between;
-  margin-bottom: 16px;
+  gap: 9px;
 }
-.tile-top .ico {
-  width: 24px;
-  height: 24px;
-  stroke: var(--clay);
+.cosmic-chip {
+  flex: none;
+  font-style: normal;
+  font-size: 0.7rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  color: #14181e;
+  background: #fff;
+  border-radius: 999px;
+  padding: 2px 9px;
 }
-.tile .n {
-  font-family: 'Fraunces', serif;
-  font-weight: 600;
+.cosmic-cap b {
+  color: #fff;
   font-size: 0.95rem;
-  color: var(--clay);
-}
-.tile h3 {
-  font-size: 1.05rem;
   font-weight: 500;
   line-height: 1.25;
-  margin-bottom: 0.45rem;
 }
-.tile p {
-  color: var(--muted);
-  font-size: 0.85rem;
-  line-height: 1.55;
-  margin: 0 0 16px;
+.cosmic-note {
+  display: block;
+  color: rgba(255, 255, 255, 0.76);
+  font-size: 0.82rem;
+  line-height: 1.5;
+  margin-top: 6px;
 }
-.round-btn {
-  margin-top: auto;
-  width: 34px;
-  height: 34px;
-  flex: none;
-  border-radius: 50%;
-  border: 1px solid var(--line-2);
-  background: transparent;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  cursor: pointer;
-  transition: background 0.2s, border-color 0.2s;
+/* On pointer devices the description stays out of the way until the card is
+   hovered or focused; touch has no hover state, so there it is always shown. */
+@media (hover: hover) {
+  .cosmic-note {
+    max-height: 0;
+    margin-top: 0;
+    opacity: 0;
+    overflow: hidden;
+    transition: max-height 0.35s ease, opacity 0.35s ease, margin-top 0.35s ease;
+  }
+  .cosmic-card:hover .cosmic-note,
+  .cosmic-card:focus-visible .cosmic-note {
+    max-height: 5.5em;
+    margin-top: 6px;
+    opacity: 1;
+  }
 }
-.round-btn .ico {
-  width: 15px;
-  height: 15px;
-  stroke: var(--clay);
+.cosmic .section-more {
+  margin-top: 34px;
 }
-.round-btn:hover {
-  background: var(--clay);
-  border-color: var(--clay);
+.cosmic .btn-outline {
+  color: #ffd9b3;
+  border-color: rgba(255, 190, 130, 0.45);
 }
-.round-btn:hover .ico {
-  stroke: #fff;
-}
-.bento-lead .round-btn {
-  width: 44px;
-  height: 44px;
-  margin: 0; /* the .bento-nav row owns the spacing now */
-  background: var(--clay);
-  border-color: var(--clay);
-}
-.bento-lead .round-btn .ico {
-  stroke: #fff;
-  width: 18px;
-  height: 18px;
+.cosmic .btn-outline:hover:not(:disabled) {
+  background: rgba(255, 170, 90, 0.14);
+  border-color: #ffbe86;
 }
 
 .section-more {
@@ -3495,11 +3526,25 @@ footer a:hover {
     gap: 16px;
     align-items: start;
   }
-  .bento {
+  /* Two columns: 01 keeps the full width up top, 02 stays tall beside the
+     stacked pair, and 03 + 06 share the last row. */
+  .cosmic-head {
     grid-template-columns: 1fr;
+    gap: 16px;
   }
-  .bento-lead {
-    min-height: 340px;
+  .cosmic-head > p {
+    justify-self: start;
+    padding-top: 0;
+  }
+  .cosmic-bento {
+    grid-template-columns: 1fr 1fr;
+    grid-template-rows: repeat(4, minmax(180px, auto));
+    grid-template-areas:
+      'c01 c01'
+      'c04 c02'
+      'c05 c02'
+      'c03 c06';
+    min-height: 0;
   }
   .day-inner {
     grid-template-columns: 1fr;
@@ -3573,9 +3618,22 @@ footer a:hover {
   .mobile-menu a:last-child {
     border-bottom: none;
   }
-  .bento-grid,
   .grid-3 {
     grid-template-columns: 1fr 1fr;
+  }
+  /* One card per row — the tall/wide slots have no room left to earn. */
+  .cosmic {
+    padding: 68px 0 76px;
+  }
+  .cosmic-bento {
+    grid-template-columns: 1fr;
+    grid-template-rows: none;
+    grid-template-areas: none;
+    gap: 14px;
+  }
+  .cosmic-bento .cosmic-card[data-slot] {
+    grid-area: auto;
+    min-height: 230px;
   }
   .grid-2 {
     grid-template-columns: 1fr;

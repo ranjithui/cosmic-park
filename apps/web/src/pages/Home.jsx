@@ -5,20 +5,20 @@ import { Media, Ph } from '../components/Placeholder.jsx';
 import Footer from '../components/Footer.jsx';
 import { today } from '../lib/format.js';
 
-// The showcase card is a slider over all seven features; the grid beside it
-// holds 02–07 and promotes any of them into the showcase on click.
+// Six image-first cards in an asymmetric bento. Each one owns a fixed slot in
+// the grid (see `.cosmic-bento` in global.css) via its number, so the visual
+// order — 04/05 left, 02 tall centre, 01 wide top-right, 03 + 06 beneath — is
+// held by CSS while the array stays in reading order.
 // `src: null` means no photograph of that subject exists yet — those fall back
 // to the labelled placeholder rather than borrowing an unrelated frame.
 const FEATURES = [
-  { n: '01', ic: 'pool', h: 'Private pool with a view', p: 'A swimming pool that looks out over mountain, garden and forest — yours alone for the stay.', src: '/gallery/outdoor-pool.jpg' },
-  { n: '02', ic: 'lawn', h: 'Expansive lawn', p: 'Open lawn for outdoor relaxation and family gatherings, from morning chai to evening games.', src: '/gallery/outdoor-sitting.jpg' },
-  { n: '03', ic: 'dine', h: 'Al fresco dining', p: 'Meals in the open air, with a complimentary breakfast overlooking the hills each morning.', src: '/gallery/balcony-view.jpg' },
-  { n: '04', ic: 'fire', h: 'Bonfire evenings', p: 'Gather under open skies as the light fades — crackling fire, cool mountain air, and stars.', src: null },
-  { n: '05', ic: 'racket', h: 'Room to play', p: 'Badminton, football and carrom keep every generation of the group busy through the day.', src: null },
-  { n: '06', ic: 'spa', h: 'Spaces that bring people together', p: 'A bathtub to soak in, thoughtful corners to talk in, and an unhurried pace throughout.', src: '/gallery/bathtub.jpg' },
+  { n: '01', h: 'Private pool with a view', p: 'A swimming pool that looks out over mountain, garden and forest — yours alone for the stay.', src: '/gallery/outdoor-pool.jpg' },
+  { n: '02', h: 'Expansive lawn', p: 'Open lawn for outdoor relaxation and family gatherings, from morning chai to evening games.', src: '/gallery/outdoor-sitting.jpg' },
+  { n: '03', h: 'Al fresco dining', p: 'Meals in the open air, with a complimentary breakfast overlooking the hills each morning.', src: '/gallery/balcony-view.jpg' },
+  { n: '04', h: 'Bonfire evenings', p: 'Gather under open skies as the light fades — crackling fire, cool mountain air, and stars.', src: null },
+  { n: '05', h: 'Room to play', p: 'Badminton, football and carrom keep every generation of the group busy through the day.', src: null },
+  { n: '06', h: 'Spaces that bring people together', p: 'A bathtub to soak in, thoughtful corners to talk in, and an unhurried pace throughout.', src: '/gallery/bathtub.jpg' },
 ];
-
-const SLIDE_MS = 5000;
 
 const BEATS = [
   { ic: 'sun', h: 'Morning calm', p: 'Watch the hills wake up with a cup of chai by the lawn, or a dip in your private pool.' },
@@ -82,16 +82,6 @@ export default function Home() {
   const [checkOut, setCheckOut] = useState('');
   const [guests, setGuests] = useState('16');
   const [rooms, setRooms] = useState('8');
-  const [feature, setFeature] = useState(0); // which feature the showcase card shows
-  const [paused, setPaused] = useState(false);
-  // Auto-advance. `feature` is a dependency so picking a card by hand restarts
-  // the clock rather than jumping again a moment later; reduced motion and
-  // pointer/keyboard focus both stop it outright.
-  useEffect(() => {
-    if (paused || reduceMotion) return undefined;
-    const id = setInterval(() => setFeature((n) => (n + 1) % FEATURES.length), SLIDE_MS);
-    return () => clearInterval(id);
-  }, [paused, reduceMotion, feature]);
 
   const search = (e) => {
     e.preventDefault();
@@ -188,16 +178,21 @@ export default function Home() {
         </form>
       </div>
 
-      {/* SIGNATURE FEATURES */}
-      <section id="experiences">
-        <div className="wrap">
-          <div className="section-head split">
+      {/* SIGNATURE FEATURES — dark cosmic bento */}
+      <section id="experiences" className="cosmic">
+        {/* Ambience only: a tiled starfield and the two ember auroras that wash
+            the top corners. Both are decorative and never take pointer events. */}
+        <div className="cosmic-stars" aria-hidden="true" />
+        <div className="cosmic-aurora" aria-hidden="true" />
+
+        <div className="wrap cosmic-inner">
+          <div className="cosmic-head">
             <div>
               <p className="eyebrow">What makes it Cosmic Park</p>
               <h2>
-                An experience,
+                An <em>experience</em>, not just
                 <br />
-                not just a place to sleep
+                a place to sleep
               </h2>
             </div>
             <p>
@@ -206,84 +201,41 @@ export default function Home() {
             </p>
           </div>
 
-          <div
-            className="bento"
-            onMouseEnter={() => setPaused(true)}
-            onMouseLeave={() => setPaused(false)}
-            onFocusCapture={() => setPaused(true)}
-            onBlurCapture={() => setPaused(false)}
-          >
-            <article className="bento-lead">
-              {/* All slides are mounted and cross-faded by opacity, so switching
-                  never shows an empty frame while a file downloads. */}
-              <div className="bento-slides">
-                {FEATURES.map((f, i) =>
-                  f.src ? (
-                    <img
-                      key={f.n}
-                      className={'bento-slide' + (i === feature ? ' on' : '')}
-                      src={f.src}
-                      alt={f.h}
-                      loading="lazy"
-                      decoding="async"
-                    />
-                  ) : (
-                    <Ph key={f.n} className={'bento-slide' + (i === feature ? ' on' : '')} tag="Photo" label={f.h} />
-                  )
+          {/* data-slot places each card in its grid area, so the array can stay
+              in 01–06 order while the layout runs 04/05 · 02 · 01 · 03/06. */}
+          <div className="cosmic-bento">
+            {FEATURES.map((f) => (
+              <button
+                type="button"
+                key={f.n}
+                className="cosmic-card"
+                data-slot={f.n}
+                aria-label={`${f.h} — see the gallery`}
+                // The label is kept short, so the copy is attached as the
+                // description instead of being swallowed by it.
+                aria-describedby={`feature-note-${f.n}`}
+                onClick={() => navigate('/gallery')}
+              >
+                {f.src ? (
+                  <img src={f.src} alt="" loading="lazy" decoding="async" />
+                ) : (
+                  <Ph tag="Photo" label={f.h} />
                 )}
-              </div>
-              <div className="bento-lead-body">
-                <span className="n">{FEATURES[feature].n}</span>
-                <h3>{FEATURES[feature].h}</h3>
-                <p>{FEATURES[feature].p}</p>
-                <div className="bento-nav">
-                  <div className="dots" role="tablist" aria-label="Signature features">
-                    {FEATURES.map((f, i) => (
-                      <button
-                        key={f.n}
-                        type="button"
-                        role="tab"
-                        className={i === feature ? 'on' : ''}
-                        aria-selected={i === feature}
-                        aria-label={f.h}
-                        onClick={() => setFeature(i)}
-                      />
-                    ))}
-                  </div>
-                  <button
-                    className="round-btn"
-                    aria-label="Next feature"
-                    onClick={() => setFeature((n) => (n + 1) % FEATURES.length)}
-                  >
-                    <Icon name="arrow" />
-                  </button>
-                </div>
-              </div>
-            </article>
-
-            {/* Six features into a 3×2 grid — every card has a tile, and the
-                showcase slides through the same set. */}
-            <div className="bento-grid">
-              {FEATURES.map((f, i) => (
-                <article className={'tile' + (i === feature ? ' on' : '')} key={f.n}>
-                  <div className="tile-top">
-                    <Icon name={f.ic} />
-                    <span className="n">{f.n}</span>
-                  </div>
-                  <h3>{f.h}</h3>
-                  <p>{f.p}</p>
-                  <button className="round-btn sm" aria-label={`Show ${f.h}`} onClick={() => setFeature(i)}>
-                    <Icon name="arrow" />
-                  </button>
-                </article>
-              ))}
-            </div>
+                <span className="cosmic-cap">
+                  <span className="cosmic-cap-top">
+                    <i className="cosmic-chip">{f.n}</i>
+                    <b>{f.h}</b>
+                  </span>
+                  <span className="cosmic-note" id={`feature-note-${f.n}`}>
+                    {f.p}
+                  </span>
+                </span>
+              </button>
+            ))}
           </div>
 
-          {/* The tiles now drive the slider rather than linking out, so this is
-              the section's route to the full gallery. */}
           <div className="section-more">
-            <button className="btn btn-ghost btn-lg" onClick={() => navigate('/gallery')}>
+            <button className="btn btn-outline btn-lg" onClick={() => navigate('/gallery')}>
               Explore more <Icon name="arrow" />
             </button>
           </div>
